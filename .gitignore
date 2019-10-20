@@ -1,0 +1,48 @@
+# Java
+
+## Compiled Files
+.class
+
+## Log Files
+.log
+
+## Package Files
+.ear
+.jar
+.nar
+.rar
+.tar.gz
+.war
+.zip
+
+
+
+# Gradle
+
+## Gradle Distribution
+.gradle/
+
+
+# JetBrains IDE
+
+## Build Files
+cmake-build-*/
+out/
+
+## IDEA Files
+.idea/
+.idea_modules/
+
+*.iws
+
+## Plugins
+atlassian-ide-plugin.xml
+com_crashlytics_export_strings.xml
+crashlytics-build.properties
+fabric.properties
+
+
+# Virtual Machine
+
+## Crash Files
+hs_err_pid*
