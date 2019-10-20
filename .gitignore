@@ -26,7 +26,7 @@
 # JetBrains IDE
 
 ## Build Files
-cmake-build-*/
+build/
 out/
 
 ## IDEA Files
