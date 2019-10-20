@@ -26,7 +26,7 @@ public class BitOutputStream {
     protected int bitsUsed;
 
     /** The data buffer. Will expand as necessary */
-    protected byte buffer[];
+    protected byte[] buffer;
 
 
 
@@ -43,6 +43,43 @@ public class BitOutputStream {
         // Set our sizes
         this.bitsAllocated = BitUtils.bytesToBits(DEFAULT_BYTE_BUFFER_SIZE);
         this.bitsUsed = 0;
+    }
+
+    /**
+     * Creates a bitstream from a set of byte data. Aligns new information to the byte
+     * boundary of the new data.
+     * @param data The data
+     */
+    public BitOutputStream(byte[] data) {
+        this(data, data.length);
+    }
+
+    /**
+     * Creates a bitstream from a set of byte data with the specified length. New information
+     * is aligned to byte boundary.
+     * @param data The data to copy
+     * @param length The length of the data to copy
+     */
+    public BitOutputStream(byte[] data, int length) {
+
+        // Make sure we have byte data
+        if (data == null || data.length == 0)
+            throw new IllegalArgumentException("Cannot create a BitStream from a nonexistent or zero-sized byte array.");
+
+        // Make sure that we want to copy data
+        if (length <= 0 || length > data.length)
+            throw new IllegalArgumentException("Can only copy data within the bounds of the byte array size and non-zero.");
+
+        // Create our buffer
+        int allocationSize = DEFAULT_BYTE_BUFFER_SIZE > length ? DEFAULT_BYTE_BUFFER_SIZE : length;
+        this.buffer = new byte[allocationSize];
+
+        // Copy our data buffer
+        System.arraycopy(data, 0, this.buffer, 0, length);
+
+        // Set our sizes
+        this.bitsAllocated = BitUtils.bytesToBits(length);
+        this.bitsUsed = this.bitsAllocated;
     }
 
 
@@ -103,11 +140,11 @@ public class BitOutputStream {
     // -- Data Methods
 
     /**
-     * Returns the data
-     * @return The data
+     * Returns a copy of our buffer data
+     * @return The buffer data
      */
     public byte[] getData() {
-        return this.buffer;
+        return this.buffer.clone();
     }
 
     /**
@@ -129,7 +166,7 @@ public class BitOutputStream {
 
 
 
-    // -- Write Methods
+    // -- Bit Methods
 
     /**
      * Writes the specified number of bits to the bitstream.
@@ -166,18 +203,24 @@ public class BitOutputStream {
             }
 
             // If we are already on a byte boundary, we can just set the next byte to our data
+            //
+            // NOTE: We don't mask anything here, although we could. This is due to the fact that
+            // extraneous bits will be overwritten in the future.
+            //
+            // TODO: Determine if it would be better to mask (i.e., should we only write the bits
+            // TODO: that we want, or should we write everything and let it be overwritten?
             if (bitsUsedMod8 == 0) {
-                this.buffer[this.bitsUsed >> 3] = dataByte;
+                this.buffer[this.bitsUsed >>> 3] = dataByte;
             } else {
 
                 // If we are here, our starting bit is not the last bit of a byte, so we need to
                 // write partial data to the current byte and then start a new byte.
-                this.buffer[this.bitsUsed >> 3] |= (byte) (dataByte >> bitsUsedMod8);
+                this.buffer[this.bitsUsed >>> 3] |= (byte) (dataByte >>> bitsUsedMod8);
 
                 // If we have remaining data, write it here
                 int remaining = BITS_PER_BYTE - bitsUsedMod8;
                 if (remaining < 8 && remaining < numBits) {
-                    this.buffer[(this.bitsUsed >> 3) + 1] = (byte) (dataByte << remaining);
+                    this.buffer[(this.bitsUsed >>> 3) + 1] = (byte) (dataByte << remaining);
                 }
             }
 
@@ -202,4 +245,10 @@ public class BitOutputStream {
             offset++;
         }
     }
+
+
+
+    // -- Data Methods
+
+
 }
