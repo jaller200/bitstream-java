@@ -393,4 +393,8 @@ public class BitOutputStreamTests {
         Assert.assertEquals((byte) 0xC0, bitOutputStream.getDataAtIndex(0));
         Assert.assertEquals((byte) 0x40, bitOutputStream.getDataAtIndex(1));
     }
+
+
+
+    // TODO: Add Remaining Tests (Should Work due to using the underlying methods)
 }
