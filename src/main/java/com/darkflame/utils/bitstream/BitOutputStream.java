@@ -178,11 +178,33 @@ public class BitOutputStream extends OutputStream {
     // -- Data Methods
 
     /**
+     * Returns the length of the internal buffer.
+     * @return The internal buffer length.
+     */
+    public int getBufferLength() {
+        return this.buffer.length;
+    }
+
+    /**
      * Returns a copy of our buffer data
      * @return The buffer data
      */
     public byte[] getData() {
         return this.buffer.clone();
+    }
+
+    /**
+     * Returns the byte data at a specific index.
+     * @param index The index
+     * @return The data at the index
+     */
+    public byte getDataAtIndex(int index) {
+
+        int bytesUsed = BitUtils.bitsToBytes(this.bitsUsed);
+        if (index > bytesUsed - 1)
+            throw new IndexOutOfBoundsException("Data index is out of bounds");
+
+        return this.buffer[index];
     }
 
     /**
@@ -338,6 +360,30 @@ public class BitOutputStream extends OutputStream {
             write1();
         else
             write0();
+    }
+
+    /**
+     * Writes a full array of bytes to the output stream.
+     * @param data The data to write
+     */
+    public void writeBytes(byte[] data) {
+        this.writeBytes(data, data.length);
+    }
+
+    /**
+     * Writes an array of bytes with a length to the output stream.
+     *
+     * This is just a convenience call to {@link BitOutputStream#writeBits(byte[], int, boolean)}
+     * to keep users from converting byte length to bit length
+     *
+     * @param data The data to write
+     * @param length The length of the data to write
+     */
+    public void writeBytes(byte[] data, int length) {
+        if (length < 0 || length > data.length)
+            throw new IllegalArgumentException("Write length must be between 0 and the data length!");
+
+        this.writeBits(data, length * BITS_PER_BYTE, true);
     }
 
     /**

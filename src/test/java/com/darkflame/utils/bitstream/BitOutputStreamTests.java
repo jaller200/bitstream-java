@@ -26,7 +26,7 @@ public class BitOutputStreamTests {
         Assert.assertEquals(0, bitOutputStream.getNumBytesUsed());
 
         // Check the size of the buffer
-        Assert.assertEquals(32, bitOutputStream.getData().length);
+        Assert.assertEquals(32, bitOutputStream.getBufferLength());
     }
 
     /**
@@ -46,7 +46,7 @@ public class BitOutputStreamTests {
         Assert.assertEquals(3, bitOutputStream.getNumBytesUsed());
 
         // Check the size of the buffer
-        Assert.assertEquals(32, bitOutputStream.getData().length);
+        Assert.assertEquals(32, bitOutputStream.getBufferLength());
     }
 
     /**
@@ -66,7 +66,7 @@ public class BitOutputStreamTests {
         Assert.assertEquals(40, bitOutputStream.getNumBytesUsed());
 
         // Check the size of the buffer
-        Assert.assertEquals(40, bitOutputStream.getData().length);
+        Assert.assertEquals(40, bitOutputStream.getBufferLength());
     }
 
     /**
@@ -86,14 +86,12 @@ public class BitOutputStreamTests {
         Assert.assertEquals(3, bitOutputStream.getNumBytesUsed());
 
         // Check the size of the buffer
-        byte[] bufferData = bitOutputStream.getData();
-        Assert.assertEquals(32, bufferData.length);
+        Assert.assertEquals(32, bitOutputStream.getBufferLength());
 
         // Verify the data
-        Assert.assertEquals((byte) 0x00, bufferData[0]);
-        Assert.assertEquals((byte) 0x01, bufferData[1]);
-        Assert.assertEquals((byte) 0x02, bufferData[2]);
-        Assert.assertEquals((byte) 0x00, bufferData[3]);
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x01, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x02, bitOutputStream.getDataAtIndex(2));
     }
 
     /**
@@ -144,11 +142,10 @@ public class BitOutputStreamTests {
         Assert.assertEquals(bitOutputStream2.getNumBitsUsed(), bitOutputStream1.getNumBitsUsed());
         Assert.assertEquals(bitOutputStream2.getNumBytesUsed(), bitOutputStream1.getNumBytesUsed());
 
-        byte[] newData = bitOutputStream2.getData();
-        Assert.assertEquals(32, newData.length);
-        Assert.assertEquals(newData[0], data[0]);
-        Assert.assertEquals(newData[1], data[1]);
-        Assert.assertEquals(newData[2], data[2]);
+        Assert.assertEquals(32, bitOutputStream2.getBufferLength());
+        Assert.assertEquals(bitOutputStream2.getDataAtIndex(0), data[0]);
+        Assert.assertEquals(bitOutputStream2.getDataAtIndex(1), data[1]);
+        Assert.assertEquals(bitOutputStream2.getDataAtIndex(2), data[2]);
     }
 
 
@@ -174,8 +171,8 @@ public class BitOutputStreamTests {
         Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
 
         // Verify that our data is valid
-        Assert.assertEquals(32, bitOutputStream.getData().length);
-        Assert.assertEquals((byte) 0x00, bitOutputStream.getData()[0]);
+        Assert.assertEquals(32, bitOutputStream.getBufferLength());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
     }
 
     /**
@@ -197,8 +194,8 @@ public class BitOutputStreamTests {
         Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
 
         // Verify that our data is valid
-        Assert.assertEquals(32, bitOutputStream.getData().length);
-        Assert.assertEquals((byte) 0x01, bitOutputStream.getData()[0]);
+        Assert.assertEquals(32, bitOutputStream.getBufferLength());
+        Assert.assertEquals((byte) 0x01, bitOutputStream.getDataAtIndex(0));
     }
 
     /**
@@ -220,8 +217,8 @@ public class BitOutputStreamTests {
         Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
 
         // Verify that our data is valid
-        Assert.assertEquals(32, bitOutputStream.getData().length);
-        Assert.assertEquals((byte) 0x01, bitOutputStream.getData()[0]);
+        Assert.assertEquals(32, bitOutputStream.getBufferLength());
+        Assert.assertEquals((byte) 0x01, bitOutputStream.getDataAtIndex(0));
     }
 
     /**
@@ -243,8 +240,8 @@ public class BitOutputStreamTests {
         Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
 
         // Verify that our data is valid
-        Assert.assertEquals(32, bitOutputStream.getData().length);
-        Assert.assertEquals((byte) 0x80, bitOutputStream.getData()[0]);
+        Assert.assertEquals(32, bitOutputStream.getBufferLength());
+        Assert.assertEquals((byte) 0x80, bitOutputStream.getDataAtIndex(0));
     }
 
     /**
@@ -266,9 +263,9 @@ public class BitOutputStreamTests {
         Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
 
         // Verify that our data is valid
-        Assert.assertEquals(32, bitOutputStream.getData().length);
-        Assert.assertEquals((byte) 0x01, bitOutputStream.getData()[0]);
-        Assert.assertEquals((byte) 0x03, bitOutputStream.getData()[1]);
+        Assert.assertEquals(32, bitOutputStream.getBufferLength());
+        Assert.assertEquals((byte) 0x01, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x03, bitOutputStream.getDataAtIndex(1));
     }
 
     /**
@@ -290,8 +287,110 @@ public class BitOutputStreamTests {
         Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
 
         // Verify that our data is valid
-        Assert.assertEquals(32, bitOutputStream.getData().length);
-        Assert.assertEquals((byte) 0x01, bitOutputStream.getData()[0]);
-        Assert.assertEquals((byte) 0x80, bitOutputStream.getData()[1]);
+        Assert.assertEquals(32, bitOutputStream.getBufferLength());
+        Assert.assertEquals((byte) 0x01, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x80, bitOutputStream.getDataAtIndex(1));
+    }
+
+
+
+    // -- BitOutputStream.write(int) Tests
+
+    /**
+     * Test that the write method works as intended.
+     */
+    @Test
+    public void testWriteMethod() {
+
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.write(1);
+
+        Assert.assertEquals(8, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals(1, bitOutputStream.getDataAtIndex(0));
+    }
+
+
+
+    // -- BitOutputStream.write0() Tests
+
+    /**
+     * Tests that the write 0 bit method works properly for a single bit
+     */
+    @Test
+    public void testWrite0MethodSingle() {
+
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.write0();
+
+        Assert.assertEquals(1, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals(0, bitOutputStream.getDataAtIndex(0));
+    }
+
+    /**
+     * Tests that the write 0 bit method works properly for multiple bits
+     */
+    @Test
+    public void testWrite0MethodMultiple() {
+
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.write0();
+        bitOutputStream.write0();
+
+        Assert.assertEquals(2, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals(0, bitOutputStream.getDataAtIndex(0));
+    }
+
+
+
+    // -- BitOutputStream.write1() Tests
+
+    /**
+     * Tests the the write 1 bit method works properly for a single bit.
+     */
+    @Test
+    public void testWrite1MethodSingle() {
+
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.write1();
+
+        Assert.assertEquals(1, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x80, bitOutputStream.getDataAtIndex(0));
+    }
+
+    /**
+     * Tests that the the write 1 bit method works properly for multiple bits.
+     */
+    @Test
+    public void testWrite1MethodMultiple() {
+
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.write1();
+        bitOutputStream.write1();
+
+        Assert.assertEquals(2, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0xC0, bitOutputStream.getDataAtIndex(0));
+    }
+
+    /**
+     * Tests that the write 1 bit method works property for multiple bits an an extra
+     * byte.
+     */
+    @Test
+    public void testWrite1MethodMultipleWithByte() {
+
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.write1();
+        bitOutputStream.write1();
+        bitOutputStream.write(1);
+
+        Assert.assertEquals(10, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0xC0, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x40, bitOutputStream.getDataAtIndex(1));
     }
 }
