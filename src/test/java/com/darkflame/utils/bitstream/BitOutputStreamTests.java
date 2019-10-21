@@ -8,6 +8,8 @@ import org.junit.Test;
  */
 public class BitOutputStreamTests {
 
+    // -- Construction Tests
+
     /**
      * Test that we can actually create the BitOutputStream and that the data
      * is correct (i.e., data used is 0)
@@ -127,6 +129,31 @@ public class BitOutputStreamTests {
         byte[] data = {0x00, 0x01, 0x02};
         BitOutputStream bitOutputStream = new BitOutputStream(data, 10);
     }
+
+    /**
+     * Tests a valid copy construction of a BitStream.
+     */
+    @Test
+    public void testBitStreamCopyConstructionValid() {
+
+        byte[] data = {0x00, 0x01, 0x02};
+        BitOutputStream bitOutputStream1 = new BitOutputStream(data);
+        BitOutputStream bitOutputStream2 = new BitOutputStream(bitOutputStream1);
+
+        // Check our data
+        Assert.assertEquals(bitOutputStream2.getNumBitsUsed(), bitOutputStream1.getNumBitsUsed());
+        Assert.assertEquals(bitOutputStream2.getNumBytesUsed(), bitOutputStream1.getNumBytesUsed());
+
+        byte[] newData = bitOutputStream2.getData();
+        Assert.assertEquals(32, newData.length);
+        Assert.assertEquals(newData[0], data[0]);
+        Assert.assertEquals(newData[1], data[1]);
+        Assert.assertEquals(newData[2], data[2]);
+    }
+
+
+
+    // -- BitOutputStream.writeBits(..) Tests
 
     /**
      * Tests that if we write a zero byte to the BitOutputStream that we will have used exactly

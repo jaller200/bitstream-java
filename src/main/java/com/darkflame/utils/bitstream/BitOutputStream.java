@@ -1,11 +1,19 @@
 package com.darkflame.utils.bitstream;
 
+import java.io.OutputStream;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+
 import java.util.Arrays;
 
 /**
  * An output stream that allows bit write operations.
  */
-public class BitOutputStream {
+public class BitOutputStream extends OutputStream {
 
     // -- Protected Constants
 
@@ -14,6 +22,15 @@ public class BitOutputStream {
 
     /** The default buffer size. */
     protected static final int DEFAULT_BYTE_BUFFER_SIZE = 32;
+
+    /** The UTF-8 encoder. */
+    private static final CharsetEncoder UTF8_ENCODER = Charset.forName("UTF-8").newEncoder();
+
+    /** The UTF-16 encoder (big endian). */
+    private static final CharsetEncoder UTF16_ENCODER_BE = Charset.forName("UTF-16BE").newEncoder();
+
+    /** The UTF-16 encoder (little endian). */
+    private static final CharsetEncoder UTF16_ENCODER_LE = Charset.forName("UTF-16LE").newEncoder();
 
 
 
@@ -27,6 +44,7 @@ public class BitOutputStream {
 
     /** The data buffer. Will expand as necessary */
     protected byte[] buffer;
+
 
 
 
@@ -82,6 +100,26 @@ public class BitOutputStream {
         this.bitsUsed = this.bitsAllocated;
     }
 
+    /**
+     * Copies a bitstream into this bitstream.
+     * @param bitOutputStream The old bitstream
+     */
+    public BitOutputStream(BitOutputStream bitOutputStream) {
+
+        if (bitOutputStream == null)
+            throw new IllegalArgumentException("Cannot copy a non-existent bitstream.");
+
+        // Get the number of bytes of the old stream (will be DEFAULT_BYTE_BUFFER_SIZE or greater)
+        byte[] oldBuffer = bitOutputStream.buffer;
+        this.buffer = new byte[oldBuffer.length];
+
+        // Copy the data
+        System.arraycopy(oldBuffer, 0, this.buffer, 0, oldBuffer.length);
+
+        // Set our data
+        this.bitsAllocated = bitOutputStream.bitsAllocated;
+        this.bitsUsed = bitOutputStream.bitsUsed;
+    }
 
 
     // -- Buffer Methods
@@ -169,6 +207,15 @@ public class BitOutputStream {
     // -- Bit Methods
 
     /**
+     * Writes the specified number of bits to the bitstream (right aligned).
+     * @param data The data to write
+     * @param numBits The number of bits to write
+     */
+    public void writeBits(byte[] data, int numBits) {
+        this.writeBits(data, numBits, true);
+    }
+
+    /**
      * Writes the specified number of bits to the bitstream.
      * @param data The data to write
      * @param numBits The number of bits of the data to write
@@ -248,7 +295,270 @@ public class BitOutputStream {
 
 
 
-    // -- Data Methods
+    // -- Data Write Methods (Primitives)
+
+    /**
+     * Writes the lower 8 bits of the input integer to the stream.
+     *
+     * This is just a simple call to {@link BitOutputStream#writeByte(byte)} meant
+     * to satisfy the OutputStream contract.
+     *
+     * @param b The data to write
+     */
+    @Override
+    public void write(int b) {
+        this.writeByte((byte) b);
+    }
+
+    /**
+     * Writes a 0 bit to the output stream.
+     */
+    public void write0() {
+
+        byte[] data = {0x00};
+        this.writeBits(data, 1);
+    }
+
+    /**
+     * Writes a 1 bit to the output stream.
+     */
+    public void write1() {
+
+        byte[] data = {0x01};
+        this.writeBits(data, 1);
+    }
+
+    /**
+     * Writes a boolean to the output stream. To conserve space,
+     * boolean values are written as a single bit instead of a single byte.
+     * @param data The boolean value
+     */
+    public void writeBoolean(boolean data) {
+        if (data)
+            write1();
+        else
+            write0();
+    }
+
+    /**
+     * Writes a byte to the output stream.
+     * @param data The byte to write
+     */
+    public void writeByte(byte data) {
+
+        byte[] arr = {data};
+        this.writeBits(arr, Byte.SIZE);
+    }
+
+    /**
+     * Writes a character to the output stream.
+     * @param data The character value
+     */
+    public void writeChar(char data) {
+        this.writeBits(ByteBuffer.allocate(2).order(ByteOrder.BIG_ENDIAN).putChar(data).array(), Character.SIZE);
+    }
+
+    /**
+     * Writes a character to the output stream in little-endian.
+     * @param data The character value
+     */
+    public void writeCharLE(char data) {
+        this.writeBits(ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN).putChar(data).array(), Character.SIZE);
+    }
+
+    /**
+     * Writes a double to the output stream.
+     * @param data The double value
+     */
+    public void writeDouble(double data) {
+        this.writeBits(ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putDouble(data).array(), Double.SIZE);
+    }
+
+    /**
+     * Writes a double to the output stream in little-endian.
+     * @param data The double value
+     */
+    public void writeDoubleLE(double data) {
+        this.writeBits(ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putDouble(data).array(), Double.SIZE);
+    }
+
+    /**
+     * Writes a float to the output stream.
+     * @param data The float value
+     */
+    public void writeFloat(float data) {
+        this.writeBits(ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putFloat(data).array(), Float.SIZE);
+    }
+
+    /**
+     * Writes a float to the output stream in little-endian.
+     * @param data The float value
+     */
+    public void writeFloatLE(float data) {
+        this.writeBits(ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putFloat(data).array(), Float.SIZE);
+    }
+
+    /**
+     * Writes an integer to the output stream.
+     * @param data The integer value
+     */
+    public void writeInteger(int data) {
+        this.writeBits(ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(data).array(), Integer.SIZE);
+    }
+
+    /**
+     * Writes an integer to the output stream in little-endian.
+     * @param data The integer value
+     */
+    public void writeIntegerLE(int data) {
+        this.writeBits(ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(data).array(), Integer.SIZE);
+    }
+
+    /**
+     * Writes a long to the output stream.
+     * @param data The long value
+     */
+    public void writeLong(long data) {
+        this.writeBits(ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(data).array(), Long.SIZE);
+    }
+
+    /**
+     * Writes a long to the output stream in little-endian.
+     * @param data The long data
+     */
+    public void writeLongLE(long data) {
+        this.writeBits(ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(data).array(), Long.SIZE);
+    }
+
+    /**
+     * Writes a short to the output stream.
+     * @param data The short value
+     */
+    public void writeShort(short data) {
+        this.writeBits(ByteBuffer.allocate(2).order(ByteOrder.BIG_ENDIAN).putShort(data).array(), Short.SIZE);
+    }
+
+    /**
+     * Writes a short to the output stream in little-endian.
+     * @param data The short value
+     */
+    public void writeShortLE(short data) {
+        this.writeBits(ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN).putShort(data).array(), Short.SIZE);
+    }
 
 
+
+    // -- Data Write Methods (Objects)
+
+    /**
+     * Writes a BitOutputStream to this output stream.
+     * @param bitOutputStream The old stream
+     */
+    public void writeBitStream(BitOutputStream bitOutputStream) {
+
+        // First, make sure we have data
+        if (bitOutputStream == null)
+            throw new IllegalArgumentException("Cannot write a null output stream");
+
+        // If we have no bits in this stream, just return.
+        if (bitOutputStream.bitsUsed == 0) return;
+
+        // Otherwise, write the data
+        this.writeBits(bitOutputStream.buffer, bitOutputStream.bitsUsed);
+    }
+
+
+
+    // -- Data Write Methods (Strings)
+
+    /**
+     * A private helper function to write UTF strings.
+     * @param str The string to write
+     * @param encoder The encoder to use
+     * @param addNullTerminator Whether or not to add the null terminator
+     */
+    private void writeString(String str, CharsetEncoder encoder, boolean addNullTerminator) {
+
+        if (str == null)
+            throw new IllegalArgumentException("Cannot write a null string to the output stream.");
+
+        if (encoder == null)
+            throw new IllegalArgumentException("Cannot write string with an invalid charset encoder");
+
+        // Create our byte array
+        byte[] strArray = new byte[addNullTerminator ? str.length() + 1 : str.length()];
+        ByteBuffer strBuffer = ByteBuffer.wrap(strArray);
+
+        // Encode the data and terminate it
+        encoder.encode(CharBuffer.wrap(str), strBuffer, true);
+        if (addNullTerminator)
+            strArray[str.length()] = 0x00;
+
+        // Write the data
+        this.writeBits(strArray, strArray.length * BITS_PER_BYTE);
+    }
+
+    /**
+     * Writes a null-terminated UTF-8 string to the output stream.
+     * @param str The string to write
+     */
+    public void writeUTF8String(String str) {
+        this.writeUTF8String(str, true);
+    }
+
+    /**
+     * Writes a UTF-8 string to the output stream.
+     * @param str The string to write
+     * @param addNullTerminator Whether or not to add a null terminator
+     */
+    public void writeUTF8String(String str, boolean addNullTerminator) {
+        this.writeString(str, UTF8_ENCODER, addNullTerminator);
+    }
+
+    /**
+     * Writes a null-terminated UTF-16 string to the output stream in big-endian.
+     * @param str The string to write
+     */
+    public void writeUTF16String(String str) {
+        this.writeUTF16String(str, true);
+    }
+
+    /**
+     * Writes a UTF-16 string to the output stream in big-endian.
+     * @param str The string to write
+     * @param addNullTerminator Whether or not to add a null terminator
+     */
+    public void writeUTF16String(String str, boolean addNullTerminator) {
+        this.writeString(str, UTF16_ENCODER_BE, true);
+    }
+
+    /**
+     * Writes a null-terminated UTF-16 string to the output stream in little-endian.
+     * @param str The string to write
+     */
+    public void writeUTF16StringLE(String str) {
+        this.writeUTF16StringLE(str, true);
+    }
+
+    /**
+     * Writes a UTF-16 string to the output stream in little-endian
+     * @param str The string to write
+     * @param addNullTerminator Whether or not to add a null terminator
+     */
+    public void writeUTF16StringLE(String str, boolean addNullTerminator) {
+        this.writeString(str, UTF16_ENCODER_LE, true);
+    }
+
+
+
+    // -- Object Methods
+
+    /**
+     * Returns a string representation of the class.
+     * @return The string representation of the class
+     */
+    @Override
+    public String toString() {
+        return "BitOutputStream[bitsAllocated=" + this.bitsAllocated + ", bitsUsed=" + this.bitsUsed + "]";
+    }
 }
