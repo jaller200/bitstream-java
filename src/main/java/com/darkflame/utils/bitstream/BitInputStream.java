@@ -26,6 +26,10 @@ public class BitInputStream {
      */
     public BitInputStream(byte[] data) {
 
+        // Make sure the data exists
+        if (data == null)
+            throw new IllegalArgumentException("Cannot create an input stream from null data!");
+
         // Set the buffer data
         this.buffer = data;
 
@@ -34,6 +38,33 @@ public class BitInputStream {
         this.readOffset = 0;
     }
 
+
+
+    // -- Data Methods
+
+    /**
+     * Returns the number of bits that we have used.
+     * @return The number of bits used
+     */
+    public int getNumBitsUsed() {
+        return this.bitsUsed;
+    }
+
+    /**
+     * Return the number of bytes that we have used.
+     * @return The number of bytes that we have used
+     */
+    public int getNumBytesUsed() {
+        return BitUtils.bitsToBytes(this.bitsUsed);
+    }
+
+    /**
+     * Returns the current read offset.
+     * @return The current read offset
+     */
+    public int getReadOffset() {
+        return this.readOffset;
+    }
 
 
     // -- Bit Methods
@@ -82,7 +113,7 @@ public class BitInputStream {
             // If we need to copy more to a new byte, do so here
             int remaining = BitConstants.BITS_PER_BYTE - readOffsetMod8;
             if ((readOffsetMod8 > 0) && (numBits > remaining))
-                output[offset] |= this.buffer[(this.readOffset >>> 3) + 1] >>> remaining;
+                output[offset] |= (this.buffer[(this.readOffset >>> 3) + 1] & 0xFF) >>> remaining;
 
             // Determine how much is left to read
             if (numBits >= BitConstants.BITS_PER_BYTE) {
@@ -96,14 +127,15 @@ public class BitInputStream {
             } else {
 
                 // Otherwise, determine how many less than 8 we need
-                int neg = numBits - BitConstants.BITS_PER_BYTE;
+                byte neg = (byte) (numBits - BitConstants.BITS_PER_BYTE);
 
                 // If we have less bits than needed for a byte, read the partial byte
                 if (neg < 0) {
 
                     // If we are aligning to the right, do so here
+                    byte shift = (byte) (-neg);
                     if (rightAligned)
-                        output[offset] >>>= -neg;
+                        output[offset] = (byte) ((output[offset] & 0xFF) >> shift);
 
                     // Update our read offset
                     this.readOffset += BitConstants.BITS_PER_BYTE + neg;

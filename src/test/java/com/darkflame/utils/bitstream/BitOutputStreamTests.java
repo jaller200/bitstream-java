@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Test the BitOutputStream class.
+ * Tests the BitOutputStream class.
  */
 public class BitOutputStreamTests {
 
@@ -187,7 +187,7 @@ public class BitOutputStreamTests {
 
         // Write our data
         byte[] data = {0x1};
-        bitOutputStream.writeBits(data, 8, false);
+        bitOutputStream.writeBits(data, 8, true);
 
         // Check our data
         Assert.assertEquals(8, bitOutputStream.getNumBitsUsed());
