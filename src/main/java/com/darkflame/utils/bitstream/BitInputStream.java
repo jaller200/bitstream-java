@@ -46,7 +46,7 @@ public class BitInputStream {
      * Returns the number of bits that we have used.
      * @return The number of bits used
      */
-    public int getNumBitsUsed() {
+    public synchronized int getNumBitsUsed() {
         return this.bitsUsed;
     }
 
@@ -54,7 +54,7 @@ public class BitInputStream {
      * Return the number of bytes that we have used.
      * @return The number of bytes that we have used
      */
-    public int getNumBytesUsed() {
+    public synchronized int getNumBytesUsed() {
         return BitUtils.bitsToBytes(this.bitsUsed);
     }
 
@@ -62,7 +62,7 @@ public class BitInputStream {
      * Returns the current read offset.
      * @return The current read offset
      */
-    public int getReadOffset() {
+    public synchronized int getReadOffset() {
         return this.readOffset;
     }
 
@@ -78,8 +78,8 @@ public class BitInputStream {
     public synchronized byte[] readBits(int numBits, boolean rightAligned) {
 
         // Make sure we are reading bits
-        if (numBits < 0)
-            throw new IllegalArgumentException("Cannot read a negative number of bits!");
+        if (numBits <= 0)
+            throw new IllegalArgumentException("We can only read positive numbers of bits!");
 
         // Make sure we are within the bounds.
         if (this.readOffset + numBits > bitsUsed)

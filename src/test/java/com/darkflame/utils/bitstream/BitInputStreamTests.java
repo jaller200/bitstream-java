@@ -111,4 +111,107 @@ public class BitInputStreamTests {
         Assert.assertEquals(1, read.length);
         Assert.assertEquals((byte) 0x80, read[0]);
     }
+
+    /**
+     * Tests that we can read 8 bits from the input stream.
+     */
+    @Test
+    public void testReadBitsEightBits() {
+
+        // Create the stream
+        byte[] data = {0x01};
+        BitInputStream bitInputStream = new BitInputStream(data);
+
+        // Read the data
+        byte[] read = bitInputStream.readBits(8, true);
+
+        // Verify that our data is valid
+        Assert.assertEquals(1, read.length);
+        Assert.assertEquals((byte) 0x01, read[0]);
+    }
+
+    /**
+     * Tests that we can read 8 bits from the input stream, left-aligning them
+     * NOTE: Pro tip - values should equal right alignment
+     */
+    @Test
+    public void testReadBitsEightBitsLeftAligned() {
+
+        // Create the stream
+        byte[] data = {0x01};
+        BitInputStream bitInputStream = new BitInputStream(data);
+
+        // Read the data
+        byte[] read = bitInputStream.readBits(8, false);
+
+        // Verify that our data is valid
+        Assert.assertEquals(1, read.length);
+        Assert.assertEquals((byte) 0x01, read[0]);
+    }
+
+    /**
+     * Tests that we can read 9 bits from the input stream.
+     */
+    @Test
+    public void testReadBitsNineBits() {
+
+        // Create the stream
+        byte[] data = {(byte) 0x01, (byte) 0x80};
+        BitInputStream bitInputStream = new BitInputStream(data);
+
+        // Read the data
+        byte[] read = bitInputStream.readBits(9, true);
+
+        // Verify that our data is valid
+        Assert.assertEquals(2, read.length);
+        Assert.assertEquals((byte) 0x01, read[0]);
+        Assert.assertEquals((byte) 0x01, read[1]);
+    }
+
+    /**
+     * Tests that we can read 9 bits from the input stream, left-aligned.
+     */
+    @Test
+    public void testReadBitsNineBitsLeftAligned() {
+
+        // Create the stream
+        byte[] data = {(byte) 0x01, (byte) 0x80};
+        BitInputStream bitInputStream = new BitInputStream(data);
+
+        // Read the data
+        byte[] read = bitInputStream.readBits(9, false);
+
+        // Verify that our data is valid
+        Assert.assertEquals(2, read.length);
+        Assert.assertEquals((byte) 0x01, read[0]);
+        Assert.assertEquals((byte) 0x80, read[1]);
+    }
+
+    /**
+     * Tests that reading 0 bits throws an error
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testReadBitsZeroBits() {
+
+        // Create the stream
+        byte[] data = {0x01};
+        BitInputStream bitInputStream = new BitInputStream(data);
+
+        // Read the data
+        byte[] read = bitInputStream.readBits(0, true);
+    }
+
+    /**
+     * Tests that reading negative bits throws an error
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testReadBitsNegativeBits() {
+
+        // Create the stream
+        byte[] data = {0x01};
+        BitInputStream bitInputStream = new BitInputStream(data);
+
+        // Read the data
+        byte[] read = bitInputStream.readBits(-1, true);
+    }
 }
