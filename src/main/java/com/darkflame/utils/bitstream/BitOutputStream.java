@@ -17,12 +17,6 @@ public class BitOutputStream extends OutputStream {
 
     // -- Protected Constants
 
-    /** The number of bits in a byte. */
-    protected static final int BITS_PER_BYTE = 8;
-
-    /** The default buffer size. */
-    protected static final int DEFAULT_BYTE_BUFFER_SIZE = 32;
-
     /** The UTF-8 encoder. */
     private static final CharsetEncoder UTF8_ENCODER = Charset.forName("UTF-8").newEncoder();
 
@@ -51,15 +45,15 @@ public class BitOutputStream extends OutputStream {
     // -- Constructor
 
     /**
-     * Creates a bitstream and sets the default buffer widths
+     * Creates a bit output stream and sets the default buffer widths
      */
     public BitOutputStream() {
 
         // Create the default buffer
-        this.buffer = new byte[DEFAULT_BYTE_BUFFER_SIZE];
+        this.buffer = new byte[BitConstants.DEFAULT_BYTE_BUFFER_SIZE];
 
         // Set our sizes
-        this.bitsAllocated = BitUtils.bytesToBits(DEFAULT_BYTE_BUFFER_SIZE);
+        this.bitsAllocated = BitUtils.bytesToBits(BitConstants.DEFAULT_BYTE_BUFFER_SIZE);
         this.bitsUsed = 0;
     }
 
@@ -89,7 +83,7 @@ public class BitOutputStream extends OutputStream {
             throw new IllegalArgumentException("Can only copy data within the bounds of the byte array size and non-zero.");
 
         // Create our buffer
-        int allocationSize = DEFAULT_BYTE_BUFFER_SIZE > length ? DEFAULT_BYTE_BUFFER_SIZE : length;
+        int allocationSize = BitConstants.DEFAULT_BYTE_BUFFER_SIZE > length ? BitConstants.DEFAULT_BYTE_BUFFER_SIZE : length;
         this.buffer = new byte[allocationSize];
 
         // Copy our data buffer
@@ -245,7 +239,7 @@ public class BitOutputStream extends OutputStream {
      */
     public void writeBits(byte[] data, int numBits, boolean rightAligned) {
 
-        if (numBits < 0 || (data.length * BITS_PER_BYTE) < numBits)
+        if (numBits < 0 || (data.length * BitConstants.BITS_PER_BYTE) < numBits)
             throw new IllegalArgumentException("The number of bits to write must be between 0" +
                     "and the bit length of the data.");
 
@@ -268,7 +262,7 @@ public class BitOutputStream extends OutputStream {
             // If we have less bits to write than make up a byte, create a byte and
             // align it as specified (left is default).
             if (numBits < 8 && rightAligned) {
-                dataByte <<= (byte) (BITS_PER_BYTE - numBits);
+                dataByte <<= (byte) (BitConstants.BITS_PER_BYTE - numBits);
             }
 
             // If we are already on a byte boundary, we can just set the next byte to our data
@@ -287,20 +281,20 @@ public class BitOutputStream extends OutputStream {
                 this.buffer[this.bitsUsed >>> 3] |= (byte) (dataByte >>> bitsUsedMod8);
 
                 // If we have remaining data, write it here
-                int remaining = BITS_PER_BYTE - bitsUsedMod8;
+                int remaining = BitConstants.BITS_PER_BYTE - bitsUsedMod8;
                 if (remaining < 8 && remaining < numBits) {
                     this.buffer[(this.bitsUsed >>> 3) + 1] = (byte) (dataByte << remaining);
                 }
             }
 
             // Determine how much we wrote
-            if (numBits >= BITS_PER_BYTE) {
+            if (numBits >= BitConstants.BITS_PER_BYTE) {
 
                 // Increase our bits used
-                this.bitsUsed += BITS_PER_BYTE;
+                this.bitsUsed += BitConstants.BITS_PER_BYTE;
 
                 // Subtract what we used
-                numBits -= BITS_PER_BYTE;
+                numBits -= BitConstants.BITS_PER_BYTE;
             } else {
 
                 // Add the remaining bits
@@ -383,7 +377,7 @@ public class BitOutputStream extends OutputStream {
         if (length < 0 || length > data.length)
             throw new IllegalArgumentException("Write length must be between 0 and the data length!");
 
-        this.writeBits(data, length * BITS_PER_BYTE, true);
+        this.writeBits(data, length * BitConstants.BITS_PER_BYTE, true);
     }
 
     /**
@@ -541,7 +535,7 @@ public class BitOutputStream extends OutputStream {
             strArray[str.length()] = 0x00;
 
         // Write the data
-        this.writeBits(strArray, strArray.length * BITS_PER_BYTE);
+        this.writeBits(strArray, strArray.length * BitConstants.BITS_PER_BYTE);
     }
 
     /**
