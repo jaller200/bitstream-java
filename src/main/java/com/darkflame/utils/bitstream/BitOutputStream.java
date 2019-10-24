@@ -122,7 +122,7 @@ public class BitOutputStream extends OutputStream {
      * Checks if we have enough space to write data.
      * @param bitsToWrite The number of bits that we need to write.
      */
-    private void checkCapacity(int bitsToWrite) {
+    private synchronized void checkCapacity(int bitsToWrite) {
 
         if (bitsToWrite < 0)
             throw new IllegalArgumentException("You can only check capacity with a non-negative amount of bits.");
@@ -140,7 +140,7 @@ public class BitOutputStream extends OutputStream {
      * has a faster time (less calls to copy the buffer).
      * @param bitsNeeded The number of bits that we need to write
      */
-    private void growCapacity(int bitsNeeded) {
+    private synchronized void growCapacity(int bitsNeeded) {
 
         // Convert to bytes
         int bytesNeeded = BitUtils.bitsToBytes(bitsNeeded);
@@ -175,7 +175,7 @@ public class BitOutputStream extends OutputStream {
      * Returns the length of the internal buffer.
      * @return The internal buffer length.
      */
-    public int getBufferLength() {
+    public synchronized int getBufferLength() {
         return this.buffer.length;
     }
 
@@ -183,7 +183,7 @@ public class BitOutputStream extends OutputStream {
      * Returns a copy of our buffer data
      * @return The buffer data
      */
-    public byte[] getData() {
+    public synchronized byte[] getData() {
         return this.buffer.clone();
     }
 
@@ -192,7 +192,7 @@ public class BitOutputStream extends OutputStream {
      * @param index The index
      * @return The data at the index
      */
-    public byte getDataAtIndex(int index) {
+    public synchronized byte getDataAtIndex(int index) {
 
         int bytesUsed = BitUtils.bitsToBytes(this.bitsUsed);
         if (index > bytesUsed - 1)
@@ -205,7 +205,7 @@ public class BitOutputStream extends OutputStream {
      * Returns the number of bits that we have used.
      * @return The number of bits used
      */
-    public int getNumBitsUsed() {
+    public synchronized int getNumBitsUsed() {
         return this.bitsUsed;
     }
 
@@ -213,7 +213,7 @@ public class BitOutputStream extends OutputStream {
      * Return the number of bytes that we have used.
      * @return The number of bytes that we have used
      */
-    public int getNumBytesUsed() {
+    public synchronized int getNumBytesUsed() {
         return BitUtils.bitsToBytes(this.bitsUsed);
     }
 
@@ -227,7 +227,7 @@ public class BitOutputStream extends OutputStream {
      * @param data The data to write
      * @param numBits The number of bits to write
      */
-    public void writeBits(byte[] data, int numBits) {
+    public synchronized void writeBits(byte[] data, int numBits) {
         this.writeBits(data, numBits, true);
     }
 
@@ -237,7 +237,7 @@ public class BitOutputStream extends OutputStream {
      * @param numBits The number of bits of the data to write
      * @param rightAligned Whether or not to align bits to the right or not when less than we need for a full byte
      */
-    public void writeBits(byte[] data, int numBits, boolean rightAligned) {
+    public synchronized void writeBits(byte[] data, int numBits, boolean rightAligned) {
 
         if (numBits < 0 || (data.length * BitConstants.BITS_PER_BYTE) < numBits)
             throw new IllegalArgumentException("The number of bits to write must be between 0" +
@@ -322,14 +322,14 @@ public class BitOutputStream extends OutputStream {
      * @param b The data to write
      */
     @Override
-    public void write(int b) {
+    public synchronized void write(int b) {
         this.writeByte((byte) b);
     }
 
     /**
      * Writes a 0 bit to the output stream.
      */
-    public void write0() {
+    public synchronized void write0() {
 
         byte[] data = {0x00};
         this.writeBits(data, 1);
@@ -338,7 +338,7 @@ public class BitOutputStream extends OutputStream {
     /**
      * Writes a 1 bit to the output stream.
      */
-    public void write1() {
+    public synchronized void write1() {
 
         byte[] data = {0x01};
         this.writeBits(data, 1);
@@ -349,7 +349,7 @@ public class BitOutputStream extends OutputStream {
      * boolean values are written as a single bit instead of a single byte.
      * @param data The boolean value
      */
-    public void writeBoolean(boolean data) {
+    public synchronized void writeBoolean(boolean data) {
         if (data)
             write1();
         else
@@ -360,7 +360,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a full array of bytes to the output stream.
      * @param data The data to write
      */
-    public void writeBytes(byte[] data) {
+    public synchronized void writeBytes(byte[] data) {
         if (data == null)
             throw new IllegalArgumentException("Cannot write null data!");
 
@@ -376,7 +376,7 @@ public class BitOutputStream extends OutputStream {
      * @param data The data to write
      * @param length The length of the data to write
      */
-    public void writeBytes(byte[] data, int length) {
+    public synchronized void writeBytes(byte[] data, int length) {
         if (data == null)
             throw new IllegalArgumentException("Cannot write null data!");
         if (length < 0 || length > data.length)
@@ -389,7 +389,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a byte to the output stream.
      * @param data The byte to write
      */
-    public void writeByte(byte data) {
+    public synchronized void writeByte(byte data) {
 
         byte[] arr = {data};
         this.writeBits(arr, Byte.SIZE);
@@ -399,7 +399,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a character to the output stream.
      * @param data The character value
      */
-    public void writeChar(char data) {
+    public synchronized void writeChar(char data) {
         this.writeBits(ByteBuffer.allocate(2).order(ByteOrder.BIG_ENDIAN).putChar(data).array(), Character.SIZE);
     }
 
@@ -407,7 +407,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a character to the output stream in little-endian.
      * @param data The character value
      */
-    public void writeCharLE(char data) {
+    public synchronized void writeCharLE(char data) {
         this.writeBits(ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN).putChar(data).array(), Character.SIZE);
     }
 
@@ -415,7 +415,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a double to the output stream.
      * @param data The double value
      */
-    public void writeDouble(double data) {
+    public synchronized void writeDouble(double data) {
         this.writeBits(ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putDouble(data).array(), Double.SIZE);
     }
 
@@ -423,7 +423,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a double to the output stream in little-endian.
      * @param data The double value
      */
-    public void writeDoubleLE(double data) {
+    public synchronized void writeDoubleLE(double data) {
         this.writeBits(ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putDouble(data).array(), Double.SIZE);
     }
 
@@ -431,7 +431,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a float to the output stream.
      * @param data The float value
      */
-    public void writeFloat(float data) {
+    public synchronized void writeFloat(float data) {
         this.writeBits(ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putFloat(data).array(), Float.SIZE);
     }
 
@@ -439,7 +439,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a float to the output stream in little-endian.
      * @param data The float value
      */
-    public void writeFloatLE(float data) {
+    public synchronized void writeFloatLE(float data) {
         this.writeBits(ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putFloat(data).array(), Float.SIZE);
     }
 
@@ -447,7 +447,7 @@ public class BitOutputStream extends OutputStream {
      * Writes an integer to the output stream.
      * @param data The integer value
      */
-    public void writeInteger(int data) {
+    public synchronized void writeInteger(int data) {
         this.writeBits(ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(data).array(), Integer.SIZE);
     }
 
@@ -455,7 +455,7 @@ public class BitOutputStream extends OutputStream {
      * Writes an integer to the output stream in little-endian.
      * @param data The integer value
      */
-    public void writeIntegerLE(int data) {
+    public synchronized void writeIntegerLE(int data) {
         this.writeBits(ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(data).array(), Integer.SIZE);
     }
 
@@ -463,7 +463,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a long to the output stream.
      * @param data The long value
      */
-    public void writeLong(long data) {
+    public synchronized void writeLong(long data) {
         this.writeBits(ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(data).array(), Long.SIZE);
     }
 
@@ -471,7 +471,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a long to the output stream in little-endian.
      * @param data The long data
      */
-    public void writeLongLE(long data) {
+    public synchronized void writeLongLE(long data) {
         this.writeBits(ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(data).array(), Long.SIZE);
     }
 
@@ -479,7 +479,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a short to the output stream.
      * @param data The short value
      */
-    public void writeShort(short data) {
+    public synchronized void writeShort(short data) {
         this.writeBits(ByteBuffer.allocate(2).order(ByteOrder.BIG_ENDIAN).putShort(data).array(), Short.SIZE);
     }
 
@@ -487,7 +487,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a short to the output stream in little-endian.
      * @param data The short value
      */
-    public void writeShortLE(short data) {
+    public synchronized void writeShortLE(short data) {
         this.writeBits(ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN).putShort(data).array(), Short.SIZE);
     }
 
@@ -499,7 +499,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a BitOutputStream to this output stream.
      * @param bitOutputStream The old stream
      */
-    public void writeBitStream(BitOutputStream bitOutputStream) {
+    public synchronized void writeBitStream(BitOutputStream bitOutputStream) {
 
         // First, make sure we have data
         if (bitOutputStream == null)
@@ -522,7 +522,7 @@ public class BitOutputStream extends OutputStream {
      * @param encoder The encoder to use
      * @param addNullTerminator Whether or not to add the null terminator
      */
-    private void writeString(String str, CharsetEncoder encoder, boolean addNullTerminator) {
+    private synchronized void writeString(String str, CharsetEncoder encoder, boolean addNullTerminator) {
 
         if (str == null)
             throw new IllegalArgumentException("Cannot write a null string to the output stream.");
@@ -547,7 +547,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a null-terminated UTF-8 string to the output stream.
      * @param str The string to write
      */
-    public void writeUTF8String(String str) {
+    public synchronized void writeUTF8String(String str) {
         this.writeUTF8String(str, true);
     }
 
@@ -556,7 +556,7 @@ public class BitOutputStream extends OutputStream {
      * @param str The string to write
      * @param addNullTerminator Whether or not to add a null terminator
      */
-    public void writeUTF8String(String str, boolean addNullTerminator) {
+    public synchronized void writeUTF8String(String str, boolean addNullTerminator) {
         this.writeString(str, UTF8_ENCODER, addNullTerminator);
     }
 
@@ -564,7 +564,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a null-terminated UTF-16 string to the output stream in big-endian.
      * @param str The string to write
      */
-    public void writeUTF16String(String str) {
+    public synchronized void writeUTF16String(String str) {
         this.writeUTF16String(str, true);
     }
 
@@ -573,7 +573,7 @@ public class BitOutputStream extends OutputStream {
      * @param str The string to write
      * @param addNullTerminator Whether or not to add a null terminator
      */
-    public void writeUTF16String(String str, boolean addNullTerminator) {
+    public synchronized void writeUTF16String(String str, boolean addNullTerminator) {
         this.writeString(str, UTF16_ENCODER_BE, true);
     }
 
@@ -581,7 +581,7 @@ public class BitOutputStream extends OutputStream {
      * Writes a null-terminated UTF-16 string to the output stream in little-endian.
      * @param str The string to write
      */
-    public void writeUTF16StringLE(String str) {
+    public synchronized void writeUTF16StringLE(String str) {
         this.writeUTF16StringLE(str, true);
     }
 
@@ -590,7 +590,7 @@ public class BitOutputStream extends OutputStream {
      * @param str The string to write
      * @param addNullTerminator Whether or not to add a null terminator
      */
-    public void writeUTF16StringLE(String str, boolean addNullTerminator) {
+    public synchronized void writeUTF16StringLE(String str, boolean addNullTerminator) {
         this.writeString(str, UTF16_ENCODER_LE, true);
     }
 
