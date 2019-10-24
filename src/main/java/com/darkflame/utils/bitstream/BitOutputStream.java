@@ -278,7 +278,7 @@ public class BitOutputStream extends OutputStream {
 
                 // If we are here, our starting bit is not the last bit of a byte, so we need to
                 // write partial data to the current byte and then start a new byte.
-                this.buffer[this.bitsUsed >>> 3] |= (byte) (dataByte >>> bitsUsedMod8);
+                this.buffer[this.bitsUsed >>> 3] |= (byte) ((dataByte & 0xFF) >>> bitsUsedMod8);
 
                 // If we have remaining data, write it here
                 int remaining = BitConstants.BITS_PER_BYTE - bitsUsedMod8;
