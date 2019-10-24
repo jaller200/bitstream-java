@@ -304,9 +304,11 @@ public class BitOutputStreamTests {
     @Test
     public void testWrite_OneValue() {
 
+        // Create the stream
         BitOutputStream bitOutputStream = new BitOutputStream();
         bitOutputStream.write(1);
 
+        // Verify the data
         Assert.assertEquals(8, bitOutputStream.getNumBitsUsed());
         Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
         Assert.assertEquals(1, bitOutputStream.getDataAtIndex(0));
@@ -322,9 +324,11 @@ public class BitOutputStreamTests {
     @Test
     public void testWrite0_SingleTime() {
 
+        // Create the stream
         BitOutputStream bitOutputStream = new BitOutputStream();
         bitOutputStream.write0();
 
+        // Verify the data
         Assert.assertEquals(1, bitOutputStream.getNumBitsUsed());
         Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
         Assert.assertEquals(0, bitOutputStream.getDataAtIndex(0));
@@ -336,10 +340,12 @@ public class BitOutputStreamTests {
     @Test
     public void testWrite0_MultipleTimes() {
 
+        // Create the stream
         BitOutputStream bitOutputStream = new BitOutputStream();
         bitOutputStream.write0();
         bitOutputStream.write0();
 
+        // Verify the data
         Assert.assertEquals(2, bitOutputStream.getNumBitsUsed());
         Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
         Assert.assertEquals(0, bitOutputStream.getDataAtIndex(0));
@@ -355,9 +361,11 @@ public class BitOutputStreamTests {
     @Test
     public void testWrite1_SingleTime() {
 
+        // Create the stream
         BitOutputStream bitOutputStream = new BitOutputStream();
         bitOutputStream.write1();
 
+        // Verify the data
         Assert.assertEquals(1, bitOutputStream.getNumBitsUsed());
         Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
         Assert.assertEquals((byte) 0x80, bitOutputStream.getDataAtIndex(0));
@@ -369,10 +377,12 @@ public class BitOutputStreamTests {
     @Test
     public void testWrite1_MultipleTimes() {
 
+        // Create the stream
         BitOutputStream bitOutputStream = new BitOutputStream();
         bitOutputStream.write1();
         bitOutputStream.write1();
 
+        // Verify the data
         Assert.assertEquals(2, bitOutputStream.getNumBitsUsed());
         Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
         Assert.assertEquals((byte) 0xC0, bitOutputStream.getDataAtIndex(0));
@@ -385,15 +395,212 @@ public class BitOutputStreamTests {
     @Test
     public void testWrite1_MultipleTimesWithByteAtTheEnd() {
 
+        // Create the stream
         BitOutputStream bitOutputStream = new BitOutputStream();
         bitOutputStream.write1();
         bitOutputStream.write1();
         bitOutputStream.write(1);
 
+        // Verify the data
         Assert.assertEquals(10, bitOutputStream.getNumBitsUsed());
         Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
         Assert.assertEquals((byte) 0xC0, bitOutputStream.getDataAtIndex(0));
         Assert.assertEquals((byte) 0x40, bitOutputStream.getDataAtIndex(1));
+    }
+
+
+
+    // -- BitOutputStream.writeBoolean(boolean) Tests
+
+    /**
+     * Tests that the write boolean method works properly for false value
+     */
+    @Test
+    public void testWriteBoolean_WriteFalse() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeBoolean(false);
+
+        // Verify the data
+        Assert.assertEquals(1, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+    }
+
+    /**
+     * Tests that the write boolean method works properly for true value
+     */
+    @Test
+    public void testWriteBoolean_WriteTrue() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeBoolean(true);
+
+        // Verify the data
+        Assert.assertEquals(1, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x80, bitOutputStream.getDataAtIndex(0));
+    }
+
+
+
+
+    // -- BitOutputStream.writeBytes(byte[], int) Tests
+
+    /**
+     * Tests that writing bytes to the output stream with the full length works correctly.
+     */
+    @Test
+    public void testWriteBytesWithLength_ValidDataAndFullLength() {
+
+        // Create the stream
+        byte[] data = {0x00, 0x01, 0x02};
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeBytes(data, 3);
+
+        // Verify the data
+        Assert.assertEquals(24, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(3, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x01, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x02, bitOutputStream.getDataAtIndex(2));
+    }
+
+    /**
+     * Tests that writing bytes to the output stream with a partial length works correctly.
+     */
+    @Test
+    public void testWriteBytesWithLength_ValidDataAndPartialLength() {
+
+        // Create the stream
+        byte[] data = {0x00, 0x01, 0x02};
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeBytes(data, 2);
+
+        // Verify the data
+        Assert.assertEquals(16, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x01, bitOutputStream.getDataAtIndex(1));
+    }
+
+    /**
+     * Tests that writing bytes to the output stream with a zero length works correctly.
+     */
+    @Test
+    public void testWriteBytesWithLength_ValidDataAndZeroLength() {
+
+        // Create the stream
+        byte[] data = {0x00, 0x01, 0x02};
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeBytes(data, 0);
+
+        // Verify the data
+        Assert.assertEquals(0, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(0, bitOutputStream.getNumBytesUsed());
+    }
+
+    /**
+     * Tests that writing bytes from an array with no elements to the output stream with a zero length works correctly.
+     */
+    @Test
+    public void testWriteBytesWithLength_ZeroDataAndZeroLength() {
+
+        // Create the stream
+        byte[] data = {};
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeBytes(data, 0);
+
+        // Verify the data
+        Assert.assertEquals(0, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(0, bitOutputStream.getNumBytesUsed());
+    }
+
+    /**
+     * Tests that writing invalid (null) data fails.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testWriteBytesWithLength_InvalidDataValidLength() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeBytes(null, 3);
+    }
+
+    /**
+     * Tests that writing data with a length that exceeds the data length fails.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testWriteBytesWithLength_ValidDataTooLargeLength() {
+
+        // Create the stream
+        byte[] data = {0x00, 0x01, 0x02};
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeBytes(data, 4);
+    }
+
+    /**
+     * Tests that writing valid data with a negative length fails.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testWriteBytesWithLength_ValidDataNegativeLength() {
+
+        // Create the stream
+        byte[] data = {0x00, 0x01, 0x02};
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeBytes(data, -1);
+    }
+
+
+
+    // -- BitOutputStream.writeBytes(byte[]) Tests
+
+    /**
+     * Tests that writing a data buffer works correctly.
+     */
+    @Test
+    public void testWriteBytes_ValidData() {
+
+        // Create the stream
+        byte[] data = {0x00, 0x01, 0x02};
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeBytes(data);
+
+        // Verify the data
+        Assert.assertEquals(24, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(3, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x01, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x02, bitOutputStream.getDataAtIndex(2));
+    }
+
+    /**
+     * Tests that writing a zero data buffer works correctly.
+     */
+    @Test
+    public void testWriteBytes_ZeroData() {
+
+        // Create the stream
+        byte[] data = {};
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeBytes(data);
+
+        // Verify the data
+        Assert.assertEquals(0, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(0, bitOutputStream.getNumBytesUsed());
+    }
+
+    /**
+     * Tests that writing null data fails correctly.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testWriteBytes_NullData() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeBytes(null);
     }
 
 

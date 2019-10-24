@@ -361,6 +361,9 @@ public class BitOutputStream extends OutputStream {
      * @param data The data to write
      */
     public void writeBytes(byte[] data) {
+        if (data == null)
+            throw new IllegalArgumentException("Cannot write null data!");
+
         this.writeBytes(data, data.length);
     }
 
@@ -374,6 +377,8 @@ public class BitOutputStream extends OutputStream {
      * @param length The length of the data to write
      */
     public void writeBytes(byte[] data, int length) {
+        if (data == null)
+            throw new IllegalArgumentException("Cannot write null data!");
         if (length < 0 || length > data.length)
             throw new IllegalArgumentException("Write length must be between 0 and the data length!");
 
