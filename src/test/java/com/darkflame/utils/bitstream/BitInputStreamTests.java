@@ -188,7 +188,21 @@ public class BitInputStreamTests {
     }
 
     /**
-     * Tests that reading 0 bits throws an error
+     * Tests that reading more bits than we have throws an error.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testReadBitsTooManyBits() {
+
+        // Create the stream
+        byte[] data = {0x01};
+        BitInputStream bitInputStream = new BitInputStream(data);
+
+        // Read the data
+        byte[] read = bitInputStream.readBits(9, true);
+    }
+
+    /**
+     * Tests that reading 0 bits throws an error.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testReadBitsZeroBits() {
@@ -202,7 +216,7 @@ public class BitInputStreamTests {
     }
 
     /**
-     * Tests that reading negative bits throws an error
+     * Tests that reading negative bits throws an error.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testReadBitsNegativeBits() {
