@@ -11,11 +11,11 @@ public class BitOutputStreamTests {
     // -- Construction Tests
 
     /**
-     * Test that we can actually create the BitOutputStream and that the data
+     * Test that we can actually create the output stream and that the data
      * is correct (i.e., data used is 0)
      */
     @Test
-    public void testDefaultConstruction() {
+    public void testDefaultConstruction_ValidData() {
 
         // Create the stream
         BitOutputStream bitOutputStream = new BitOutputStream();
@@ -30,11 +30,11 @@ public class BitOutputStreamTests {
     }
 
     /**
-     * Test that we can actually create the BitOutputStream from a byte array and that
+     * Test that we can actually create the output stream from a byte array and that
      * if the byte array is smaller than the DEFAULT_BYTE_BUFFER_SIZE, the data is correct
      */
     @Test
-    public void testLessThanDefaultSizeByteArrayConstruction() {
+    public void testByteArrayConstruction_LessThanDefaultSize() {
 
         // Create the stream
         byte[] data = new byte[3];
@@ -50,11 +50,11 @@ public class BitOutputStreamTests {
     }
 
     /**
-     * Test that we can actually create the BitOutputStream from a byte array and that
+     * Test that we can actually create the output stream from a byte array and that
      * if the byte array is larger than the DEFAULT_BYTE_BUFFER_SIZE, the data is correct
      */
     @Test
-    public void testMoreThenDefaultSizeByteArrayConstruction() {
+    public void testByteArrayConstruction_MoreThanDefaultSize() {
 
         // Create the stream
         byte[] data = new byte[40];
@@ -70,11 +70,11 @@ public class BitOutputStreamTests {
     }
 
     /**
-     * Test that we can actually create the BitOutputStream from a byte array and
+     * Test that we can actually create the output stream from a byte array and
      * a length of less than the full array.
      */
     @Test
-    public void testByteArrayAndLengthConstruction() {
+    public void testByteArrayAndLengthConstruction_ValidData() {
 
         // Create the stream
         byte[] data = {0x00, 0x01, 0x02, 0x03, 0x04};
@@ -95,45 +95,46 @@ public class BitOutputStreamTests {
     }
 
     /**
-     * Tests that the correct exception is thrown when we try to create a BitStream
+     * Tests that the correct exception is thrown when we try to create an output stream
      * from a non-existent byte array.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testNullByteArrayConstruction() {
+    public void testByteArrayAndLengthConstruction_NullDataZeroLength() {
 
-        // Create the BitStream
+        // Create the stream
         BitOutputStream bitOutputStream = new BitOutputStream(null, 0);
     }
 
     /**
-     * Tests that the correct exception is thrown when we try to create a BitStream
+     * Tests that the correct exception is thrown when we try to create an output stream
      * from a non-existent byte array.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testNullByteArrayConstructionNonZeroLength() {
+    public void testByteArrayAndLengthConstruction_NullDataNonZeroLength() {
 
-        // Create the BitStream
+        // Create the stream
         BitOutputStream bitOutputStream = new BitOutputStream(null, 10);
     }
 
     /**
-     * Tests that the correct exception is thrown when we try to create a BitStream
+     * Tests that the correct exception is thrown when we try to create an output stream
      * from a non-existent byte array.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testByteArrayConstructionLengthExceedsData() {
+    public void testByteArrayConstructionLength_ExceedsData() {
 
-        // Create the BitStream
+        // Create the stream
         byte[] data = {0x00, 0x01, 0x02};
         BitOutputStream bitOutputStream = new BitOutputStream(data, 10);
     }
 
     /**
-     * Tests a valid copy construction of a BitStream.
+     * Tests a valid copy construction of an output stream.
      */
     @Test
-    public void testBitStreamCopyConstructionValid() {
+    public void testBitStreamCopyConstruction_ValidData() {
 
+        // Create the stream
         byte[] data = {0x00, 0x01, 0x02};
         BitOutputStream bitOutputStream1 = new BitOutputStream(data);
         BitOutputStream bitOutputStream2 = new BitOutputStream(bitOutputStream1);
@@ -142,6 +143,7 @@ public class BitOutputStreamTests {
         Assert.assertEquals(bitOutputStream2.getNumBitsUsed(), bitOutputStream1.getNumBitsUsed());
         Assert.assertEquals(bitOutputStream2.getNumBytesUsed(), bitOutputStream1.getNumBytesUsed());
 
+        // Validate that the data is correct
         Assert.assertEquals(32, bitOutputStream2.getBufferLength());
         Assert.assertEquals(bitOutputStream2.getDataAtIndex(0), data[0]);
         Assert.assertEquals(bitOutputStream2.getDataAtIndex(1), data[1]);
@@ -153,11 +155,11 @@ public class BitOutputStreamTests {
     // -- BitOutputStream.writeBits(..) Tests
 
     /**
-     * Tests that if we write a zero byte to the BitOutputStream that we will have used exactly
+     * Tests that if we write a zero byte to the output stream that we will have used exactly
      * 1 byte (8 bits).
      */
     @Test
-    public void testWriteBitsWriteZeroByte() {
+    public void testWriteBits_WriteZeroByte() {
 
         // Create the stream
         BitOutputStream bitOutputStream = new BitOutputStream();
@@ -176,11 +178,11 @@ public class BitOutputStreamTests {
     }
 
     /**
-     * Tests that if we write a one byte to the BitOutputStream that we will have used exactly
+     * Tests that if we write a one byte to the output stream that we will have used exactly
      * 1 byte (8 bits).
      */
     @Test
-    public void testWriteBitsWriteOneByte() {
+    public void testWriteBits_WriteOneByte() {
 
         // Create the stream
         BitOutputStream bitOutputStream = new BitOutputStream();
@@ -203,7 +205,7 @@ public class BitOutputStreamTests {
      * 1 byte (1 bit).
      */
     @Test
-    public void testWriteBitsWriteOneBitLeftAligned() {
+    public void testWriteBits_WriteOneBitLeftAligned() {
 
         // Create the stream
         BitOutputStream bitOutputStream = new BitOutputStream();
@@ -226,7 +228,7 @@ public class BitOutputStreamTests {
      * that we will have used exactly 1 byte (1 bit).
      */
     @Test
-    public void testWriteBitsWriteOneBitRightAligned() {
+    public void testWriteBits_WriteOneBitRightAligned() {
 
         // Create the stream
         BitOutputStream bitOutputStream = new BitOutputStream();
@@ -249,7 +251,7 @@ public class BitOutputStreamTests {
      * have used exactly 2 bytes (9 bits).
      */
     @Test
-    public void testWriteBitsWriteNineBitsLeftAlign() {
+    public void testWriteBits_WriteNineBitsLeftAligned() {
 
         // Create the stream
         BitOutputStream bitOutputStream = new BitOutputStream();
@@ -273,7 +275,7 @@ public class BitOutputStreamTests {
      * have used exactly 2 bytes (9 bits).
      */
     @Test
-    public void testWriteBitsWriteNineBitsRightAlign() {
+    public void testWriteBits_WriteNineBitsRightAligned() {
 
         // Create the stream
         BitOutputStream bitOutputStream = new BitOutputStream();
@@ -300,7 +302,7 @@ public class BitOutputStreamTests {
      * Test that the write method works as intended.
      */
     @Test
-    public void testWriteMethod() {
+    public void testWrite_OneValue() {
 
         BitOutputStream bitOutputStream = new BitOutputStream();
         bitOutputStream.write(1);
@@ -318,7 +320,7 @@ public class BitOutputStreamTests {
      * Tests that the write 0 bit method works properly for a single bit
      */
     @Test
-    public void testWrite0MethodSingle() {
+    public void testWrite0_SingleTime() {
 
         BitOutputStream bitOutputStream = new BitOutputStream();
         bitOutputStream.write0();
@@ -332,7 +334,7 @@ public class BitOutputStreamTests {
      * Tests that the write 0 bit method works properly for multiple bits
      */
     @Test
-    public void testWrite0MethodMultiple() {
+    public void testWrite0_MultipleTimes() {
 
         BitOutputStream bitOutputStream = new BitOutputStream();
         bitOutputStream.write0();
@@ -351,7 +353,7 @@ public class BitOutputStreamTests {
      * Tests the the write 1 bit method works properly for a single bit.
      */
     @Test
-    public void testWrite1MethodSingle() {
+    public void testWrite1_SingleTime() {
 
         BitOutputStream bitOutputStream = new BitOutputStream();
         bitOutputStream.write1();
@@ -365,7 +367,7 @@ public class BitOutputStreamTests {
      * Tests that the the write 1 bit method works properly for multiple bits.
      */
     @Test
-    public void testWrite1MethodMultiple() {
+    public void testWrite1_MultipleTimes() {
 
         BitOutputStream bitOutputStream = new BitOutputStream();
         bitOutputStream.write1();
@@ -381,7 +383,7 @@ public class BitOutputStreamTests {
      * byte.
      */
     @Test
-    public void testWrite1MethodMultipleWithByte() {
+    public void testWrite1_MultipleTimesWithByteAtTheEnd() {
 
         BitOutputStream bitOutputStream = new BitOutputStream();
         bitOutputStream.write1();
