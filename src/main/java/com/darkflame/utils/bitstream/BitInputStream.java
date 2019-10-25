@@ -314,6 +314,22 @@ public class BitInputStream extends InputStream {
     // -- Getter Methods
 
     /**
+     * Returns the number of bits that we have left to read.
+     * @return The number of bits that we have left to read
+     */
+    public synchronized int getNumBitsLeft() {
+        return (this.bitsUsed - this.readOffset);
+    }
+
+    /**
+     * Returns the number of bytes that we have left to read.
+     * @return The number of bytes that we have left to read
+     */
+    public synchronized int getNumBytesLeft() {
+        return BitUtils.bitsToBytes(this.bitsUsed - this.readOffset);
+    }
+
+    /**
      * Returns the number of bits that we have used.
      * @return The number of bits used
      */
