@@ -605,5 +605,967 @@ public class BitOutputStreamTests {
 
 
 
-    // TODO: Add Remaining Primitive Tests (Should Work due to using the underlying methods)
+    // -- BitOutputStream.writeByte(byte) Tests
+
+    /**
+     * Tests that writing a byte works correctly.
+     */
+    @Test
+    public void testWriteByte_NormalByte() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeByte((byte) 10);
+
+        // Verify the data
+        Assert.assertEquals(8, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 10, bitOutputStream.getDataAtIndex(0));
+    }
+
+    /**
+     * Tests that writing the max byte works correctly.
+     */
+    @Test
+    public void testWriteByte_MaxByte() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeByte(Byte.MAX_VALUE);
+
+        // Verify the data
+        Assert.assertEquals(8, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals(Byte.MAX_VALUE, bitOutputStream.getDataAtIndex(0));
+    }
+
+    /**
+     * Tests that writing the min byte works correctly.
+     */
+    @Test
+    public void testWriteByte_MinByte() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeByte(Byte.MIN_VALUE);
+
+        // Verify the data
+        Assert.assertEquals(8, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(1, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals(Byte.MIN_VALUE, bitOutputStream.getDataAtIndex(0));
+    }
+
+
+
+    // -- BitOutputStream.writeChar(char) Tests
+
+    /**
+     * Tests that writing a character works correctly.
+     */
+    @Test
+    public void testWriteChar_NormalCharacter() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeChar('A');
+
+        // Verify the data
+        Assert.assertEquals(16, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x41, bitOutputStream.getDataAtIndex(1));
+    }
+
+    /**
+     * Tests that writing the max character works correctly.
+     */
+    @Test
+    public void testWriteChar_MaxCharacter() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeChar(Character.MAX_VALUE);
+
+        // Verify the data
+        Assert.assertEquals(16, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(1));
+    }
+
+    /**
+     * Tests that writing the min character works correctly.
+     */
+    @Test
+    public void testWriteChar_MinCharacter() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeChar(Character.MIN_VALUE);
+
+        // Verify the data
+        Assert.assertEquals(16, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+    }
+
+
+
+    // -- BitOutputStream.writeCharLE(char) Tests
+
+    /**
+     * Tests that writing a character in little-endian works correctly.
+     */
+    @Test
+    public void testWriteCharLE_NormalCharacter() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeCharLE('A');
+
+        // Verify the data
+        Assert.assertEquals(16, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x41, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+    }
+
+    /**
+     * Tests that writing the max character in little-endian works correctly.
+     */
+    @Test
+    public void testWriteCharLE_MaxCharacter() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeCharLE(Character.MAX_VALUE);
+
+        // Verify the data
+        Assert.assertEquals(16, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(1));
+    }
+
+    /**
+     * Tests that writing the min character in little-endian works correctly.
+     */
+    @Test
+    public void testWriteCharLE_MinCharacter() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeCharLE(Character.MIN_VALUE);
+
+        // Verify the data
+        Assert.assertEquals(16, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+    }
+
+
+
+    // -- BitOutputStream.writeDouble(double) Tests
+
+    /**
+     * Tests that writing a double works correctly.
+     */
+    @Test
+    public void testWriteDouble_NormalDouble() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeDouble(1.5D);
+
+        // Verify the data
+        Assert.assertEquals(64, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(8, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x3F, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0xF8, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(4));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(5));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(6));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(7));
+    }
+
+    /**
+     * Tests that writing a zero double works correctly.
+     */
+    @Test
+    public void testWriteDouble_ZeroDouble() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeDouble(0.0D);
+
+        // Verify the data
+        Assert.assertEquals(64, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(8, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(4));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(5));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(6));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(7));
+    }
+
+    /**
+     * Tests that writing the max double works correctly.
+     */
+    @Test
+    public void testWriteDouble_MaxDouble() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeDouble(Double.MAX_VALUE);
+
+        // Verify the data (MAX_VALUE = 0x7fefffffffffffffL)
+        Assert.assertEquals(64, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(8, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x7F, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0xEF, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(4));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(5));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(6));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(7));
+    }
+
+    /**
+     * Tests that writing the min double works correctly.
+     */
+    @Test
+    public void testWriteDouble_MinDouble() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeDouble(Double.MIN_VALUE);
+
+        // Verify the data (MIN_VALUE = 0x01)
+        Assert.assertEquals(64, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(8, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(4));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(5));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(6));
+        Assert.assertEquals((byte) 0x01, bitOutputStream.getDataAtIndex(7));
+    }
+
+
+
+    // -- BitOutputStream.writeDoubleLE(double) Tests
+
+    /**
+     * Tests that writing a double in little-endian works correctly.
+     */
+    @Test
+    public void testWriteDoubleLE_NormalDouble() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeDoubleLE(1.5D);
+
+        // Verify the data
+        Assert.assertEquals(64, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(8, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(4));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(5));
+        Assert.assertEquals((byte) 0xF8, bitOutputStream.getDataAtIndex(6));
+        Assert.assertEquals((byte) 0x3F, bitOutputStream.getDataAtIndex(7));
+    }
+
+    /**
+     * Tests that writing a zero double in little-endian works correctly.
+     */
+    @Test
+    public void testWriteDoubleLE_ZeroDouble() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeDoubleLE(0.0D);
+
+        // Verify the data
+        Assert.assertEquals(64, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(8, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(4));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(5));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(6));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(7));
+    }
+
+    /**
+     * Tests that writing the max double in little-endian works correctly.
+     */
+    @Test
+    public void testWriteDoubleLE_MaxDouble() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeDoubleLE(Double.MAX_VALUE);
+
+        // Verify the data (MAX_VALUE = 0x7fefffffffffffffL)
+        Assert.assertEquals(64, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(8, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(4));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(5));
+        Assert.assertEquals((byte) 0xEF, bitOutputStream.getDataAtIndex(6));
+        Assert.assertEquals((byte) 0x7F, bitOutputStream.getDataAtIndex(7));
+    }
+
+    /**
+     * Tests that writing the min double in little-endian works correctly.
+     */
+    @Test
+    public void testWriteDoubleLE_MinDouble() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeDoubleLE(Double.MIN_VALUE);
+
+        // Verify the data (MIN_VALUE = 0x01)
+        Assert.assertEquals(64, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(8, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x01, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(4));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(5));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(6));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(7));
+    }
+
+
+
+    // -- BitOutputStream.writeFloat(float) Tests
+
+    /**
+     * Tests that writing a float works correctly.
+     */
+    @Test
+    public void testWriteFloat_NormalFloat() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeFloat(1.5F);
+
+        // Verify the data
+        Assert.assertEquals(32, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(4, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x3F, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0xC0, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+    }
+
+    /**
+     * Tests that writing a zero float works correctly.
+     */
+    @Test
+    public void testWriteFloat_ZeroFloat() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeFloat(0.0F);
+
+        // Verify the data
+        Assert.assertEquals(32, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(4, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+    }
+
+    /**
+     * Tests that writing the max float works correctly.
+     */
+    @Test
+    public void testWriteFloat_MaxFloat() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeFloat(Float.MAX_VALUE);
+
+        // Verify the data (MAX_VALUE = 0x7f7fffff)
+        Assert.assertEquals(32, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(4, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x7F, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x7F, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(3));
+    }
+
+    /**
+     * Tests that writing the min float works correctly.
+     */
+    @Test
+    public void testWriteFloat_MinFloat() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeFloat(Float.MIN_VALUE);
+
+        // Verify the data (MIN_VALUE = 0x1)
+        Assert.assertEquals(32, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(4, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x01, bitOutputStream.getDataAtIndex(3));
+    }
+
+
+
+    // -- BitOutputStream.writeFloatLE(float) Tests
+
+    /**
+     * Tests that writing a float in little-endian works correctly.
+     */
+    @Test
+    public void testWriteFloatLE_NormalFloat() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeFloatLE(1.5F);
+
+        // Verify the data
+        Assert.assertEquals(32, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(4, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0xC0, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x3F, bitOutputStream.getDataAtIndex(3));
+    }
+
+    /**
+     * Tests that writing a zero float in little-endian works correctly.
+     */
+    @Test
+    public void testWriteFloatLE_ZeroFloat() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeFloatLE(0.0F);
+
+        // Verify the data
+        Assert.assertEquals(32, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(4, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+    }
+
+    /**
+     * Tests that writing the max float in little-endian works correctly.
+     */
+    @Test
+    public void testWriteFloatLE_MaxFloat() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeFloatLE(Float.MAX_VALUE);
+
+        // Verify the data (MAX_VALUE = 0x7f7fffff)
+        Assert.assertEquals(32, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(4, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x7F, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x7F, bitOutputStream.getDataAtIndex(3));
+    }
+
+    /**
+     * Tests that writing the min float in little-endian works correctly.
+     */
+    @Test
+    public void testWriteFloatLE_MinFloat() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeFloatLE(Float.MIN_VALUE);
+
+        // Verify the data (MIN_VALUE = 0x1)
+        Assert.assertEquals(32, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(4, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x01, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+    }
+
+
+
+    // -- BitOutputStream.writeInteger(int) Tests
+
+    /**
+     * Tests that writing an integer works correctly.
+     */
+    @Test
+    public void testWriteInteger_NormalInteger() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeInteger(100);
+
+        // Verify the data
+        Assert.assertEquals(32, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(4, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x64, bitOutputStream.getDataAtIndex(3));
+    }
+
+    /**
+     * Tests that writing the maximum integer works correctly.
+     */
+    @Test
+    public void testWriteInteger_MaxInteger() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeInteger(0xFFFFFFFF);
+
+        // Verify the data
+        Assert.assertEquals(32, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(4, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(3));
+    }
+
+    /**
+     * Tests that writing the minimum integer works correctly.
+     */
+    @Test
+    public void testWriteInteger_MinInteger() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeInteger(0);
+
+        // Verify the data
+        Assert.assertEquals(32, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(4, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+    }
+
+
+
+    // -- BitOutputStream.writeIntegerLE(int) Tests
+
+    /**
+     * Tests that writing an integer in little-endian works correctly.
+     */
+    @Test
+    public void testWriteIntegerLE_NormalInteger() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeIntegerLE(100);
+
+        // Verify the data
+        Assert.assertEquals(32, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(4, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x64, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+    }
+
+    /**
+     * Tests that writing the maximum integer in little-endian works correctly.
+     */
+    @Test
+    public void testWriteIntegerLE_MaxInteger() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeIntegerLE(0xFFFFFFFF);
+
+        // Verify the data
+        Assert.assertEquals(32, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(4, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(3));
+    }
+
+    /**
+     * Tests that writing the minimum integer in little-endian works correctly.
+     */
+    @Test
+    public void testWriteIntegerLE_MinInteger() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeIntegerLE(0);
+
+        // Verify the data
+        Assert.assertEquals(32, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(4, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+    }
+
+
+
+    // -- BitOutputStream.writeLong(long) Tests
+
+    /**
+     * Tests that writing a long works correctly.
+     */
+    @Test
+    public void testWriteLong_NormalLong() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeLong(100L);
+
+        // Verify the data
+        Assert.assertEquals(64, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(8, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(4));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(5));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(6));
+        Assert.assertEquals((byte) 0x64, bitOutputStream.getDataAtIndex(7));
+    }
+
+    /**
+     * Tests that writing the maximum long works correctly.
+     */
+    @Test
+    public void testWriteLong_MaxLong() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeLong(0xFFFFFFFFFFFFFFFFL);
+
+        // Verify the data
+        Assert.assertEquals(64, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(8, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(4));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(5));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(6));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(7));
+    }
+
+    /**
+     * Tests that writing the minimum long works correctly.
+     */
+    @Test
+    public void testWriteLong_MinLong() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeLong(0L);
+
+        // Verify the data
+        Assert.assertEquals(64, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(8, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(4));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(5));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(6));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(7));
+    }
+
+
+
+    // -- BitOutputStream.writeLongLE(long) Tests
+
+    /**
+     * Tests that writing a long in little-endian works correctly.
+     */
+    @Test
+    public void testWriteLongLE_NormalLong() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeLongLE(100L);
+
+        // Verify the data
+        Assert.assertEquals(64, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(8, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x64, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(4));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(5));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(6));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(7));
+    }
+
+    /**
+     * Tests that writing the maximum long in little-endian works correctly.
+     */
+    @Test
+    public void testWriteLongLE_MaxLong() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeLongLE(0xFFFFFFFFFFFFFFFFL);
+
+        // Verify the data
+        Assert.assertEquals(64, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(8, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(4));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(5));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(6));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(7));
+    }
+
+    /**
+     * Tests that writing the minimum long in little-endian works correctly.
+     */
+    @Test
+    public void testWriteLongLE_MinLong() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeLongLE(0L);
+
+        // Verify the data
+        Assert.assertEquals(64, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(8, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(4));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(5));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(6));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(7));
+    }
+
+
+
+    // -- BitOutputStream.writeShort(short) Tests
+
+    /**
+     * Tests that writing a short works correctly.
+     */
+    @Test
+    public void testWriteShort_NormalShort() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeShort((short) 100);
+
+        // Verify the data
+        Assert.assertEquals(16, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x64, bitOutputStream.getDataAtIndex(1));
+    }
+
+    /**
+     * Tests that writing the maximum short works correctly.
+     */
+    @Test
+    public void testWriteShort_MaxShort() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeShort((short) 0xFFFF);
+
+        // Verify the data
+        Assert.assertEquals(16, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(1));
+    }
+
+    /**
+     * Tests that writing the minimum short works correctly.
+     */
+    @Test
+    public void testWriteShort_MinShort() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeShort((short) 0);
+
+        // Verify the data
+        Assert.assertEquals(16, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+    }
+
+
+
+    // -- BitOutputStream.writeShortLE(short) Tests
+
+    /**
+     * Tests that writing a short in little-endian works correctly.
+     */
+    @Test
+    public void testWriteShortLE_NormalShort() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeShortLE((short) 100);
+
+        // Verify the data
+        Assert.assertEquals(16, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x64, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+    }
+
+    /**
+     * Tests that writing the maximum short in little-endian works correctly.
+     */
+    @Test
+    public void testWriteShortLE_MaxShort() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeShortLE((short) 0xFFFF);
+
+        // Verify the data
+        Assert.assertEquals(16, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0xFF, bitOutputStream.getDataAtIndex(1));
+    }
+
+    /**
+     * Tests that writing the minimum short in little-endian works correctly.
+     */
+    @Test
+    public void testWriteShortLE_MinShort() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeShortLE((short) 0);
+
+        // Verify the data
+        Assert.assertEquals(16, bitOutputStream.getNumBitsUsed());
+        Assert.assertEquals(2, bitOutputStream.getNumBytesUsed());
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream.getDataAtIndex(1));
+    }
+
+
+
+    // -- BitOutputStream.writeBitStream(BitOutputStream) Tests
+
+    /**
+     * Tests that we can correctly write a valid output stream to this output stream.
+     */
+    @Test
+    public void testWriteBitStream_ValidBitStreamNoInitialData() {
+
+        // Create the first stream
+        BitOutputStream bitOutputStream1 = new BitOutputStream();
+        bitOutputStream1.write1();
+        bitOutputStream1.writeIntegerLE(100);
+
+        // Now copy this to the next bitstream
+        BitOutputStream bitOutputStream2 = new BitOutputStream();
+        bitOutputStream2.writeBitStream(bitOutputStream1);
+
+        // Verify the data
+        Assert.assertEquals(33, bitOutputStream2.getNumBitsUsed());
+        Assert.assertEquals(5, bitOutputStream2.getNumBytesUsed());
+
+        Assert.assertEquals((byte) 0xB2, bitOutputStream2.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream2.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream2.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream2.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0x00, bitOutputStream2.getDataAtIndex(4));
+    }
+
+    /**
+     * Tests that we can correctly write a valid output stream to this output stream
+     * even if it has initial data.
+     */
+    @Test
+    public void testWriteBitStream_ValidBitStreamInitialData() {
+
+        // Create the first stream
+        BitOutputStream bitOutputStream1 = new BitOutputStream();
+        bitOutputStream1.write1();
+        bitOutputStream1.writeIntegerLE(100);
+
+        // Now copy this to the next bitstream
+        BitOutputStream bitOutputStream2 = new BitOutputStream();
+        bitOutputStream2.write1();
+        bitOutputStream2.write0();
+        bitOutputStream2.writeIntegerLE(200);
+        bitOutputStream2.writeBitStream(bitOutputStream1);
+
+        // Verify the data
+        Assert.assertEquals(67, bitOutputStream2.getNumBitsUsed());
+        Assert.assertEquals(9, bitOutputStream2.getNumBytesUsed());
+
+        Assert.assertEquals((byte) 0xB2, bitOutputStream2.getDataAtIndex(0));
+        Assert.assertEquals((byte) 0x00, bitOutputStream2.getDataAtIndex(1));
+        Assert.assertEquals((byte) 0x00, bitOutputStream2.getDataAtIndex(2));
+        Assert.assertEquals((byte) 0x00, bitOutputStream2.getDataAtIndex(3));
+        Assert.assertEquals((byte) 0x2C, bitOutputStream2.getDataAtIndex(4));
+        Assert.assertEquals((byte) 0x80, bitOutputStream2.getDataAtIndex(5));
+        Assert.assertEquals((byte) 0x00, bitOutputStream2.getDataAtIndex(6));
+        Assert.assertEquals((byte) 0x00, bitOutputStream2.getDataAtIndex(7));
+    }
+
+    /**
+     * Tests that trying to write a null stream to the ouput stream will fail.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testWriteBitStream_NullData() {
+
+        // Create the stream
+        BitOutputStream bitOutputStream = new BitOutputStream();
+        bitOutputStream.writeBitStream(null);
+    }
 }
