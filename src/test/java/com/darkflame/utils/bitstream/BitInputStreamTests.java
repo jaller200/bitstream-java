@@ -3,6 +3,8 @@ package com.darkflame.utils.bitstream;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.EOFException;
+
 /**
  * Tests the BitInputStream class.
  */
@@ -62,7 +64,7 @@ public class BitInputStreamTests {
      * Tests that we can read a 0 bit from the input stream.
      */
     @Test
-    public void testReadBits_ReadSingleZeroBit() {
+    public void testReadBits_ReadSingleZeroBit() throws EOFException {
 
         // Create the stream
         byte[] data = {0x00};
@@ -80,7 +82,7 @@ public class BitInputStreamTests {
      * Tests that we can read a 1 byte from the input stream, but left-align it
      */
     @Test
-    public void testReadBits_ReadSingleOneBitLeftAligned() {
+    public void testReadBits_ReadSingleOneBitLeftAligned() throws EOFException {
 
         // Create the stream
         byte[] data = {(byte) 0x80};
@@ -98,7 +100,7 @@ public class BitInputStreamTests {
      * Tests that we can read a 1 bit from the input stream.
      */
     @Test
-    public void testReadBits_ReadSingleOneBitRightAligned() {
+    public void testReadBits_ReadSingleOneBitRightAligned() throws EOFException {
 
         // Create the stream
         byte[] data = {(byte) 0x80};
@@ -117,7 +119,7 @@ public class BitInputStreamTests {
      * NOTE: Pro tip - values should equal right alignment
      */
     @Test
-    public void testReadBits_ReadEightBitsLeftAligned() {
+    public void testReadBits_ReadEightBitsLeftAligned() throws EOFException {
 
         // Create the stream
         byte[] data = {0x01};
@@ -135,7 +137,7 @@ public class BitInputStreamTests {
      * Tests that we can read 8 bits from the input stream.
      */
     @Test
-    public void testReadBits_ReadEightBitsRightAligned() {
+    public void testReadBits_ReadEightBitsRightAligned() throws EOFException {
 
         // Create the stream
         byte[] data = {0x01};
@@ -153,7 +155,7 @@ public class BitInputStreamTests {
      * Tests that we can read 9 bits from the input stream, left-aligned.
      */
     @Test
-    public void testReadBits_ReadNineBitsLeftAligned() {
+    public void testReadBits_ReadNineBitsLeftAligned() throws EOFException {
 
         // Create the stream
         byte[] data = {(byte) 0x01, (byte) 0x80};
@@ -172,7 +174,7 @@ public class BitInputStreamTests {
      * Tests that we can read 9 bits from the input stream.
      */
     @Test
-    public void testReadBits_ReadNineBitsRightAligned() {
+    public void testReadBits_ReadNineBitsRightAligned() throws EOFException {
 
         // Create the stream
         byte[] data = {(byte) 0x01, (byte) 0x80};
@@ -190,8 +192,8 @@ public class BitInputStreamTests {
     /**
      * Tests that reading more bits than we have throws an error.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public void testReadBits_ReadTooManyBits() {
+    @Test(expected = EOFException.class)
+    public void testReadBits_ReadTooManyBits() throws EOFException {
 
         // Create the stream
         byte[] data = {0x01};
@@ -205,7 +207,7 @@ public class BitInputStreamTests {
      * Tests that reading 0 bits throws an error.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testReadBits_ReadZeroBits() {
+    public void testReadBits_ReadZeroBits() throws EOFException {
 
         // Create the stream
         byte[] data = {0x01};
@@ -219,7 +221,7 @@ public class BitInputStreamTests {
      * Tests that reading negative bits throws an error.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testReadBits_ReadNegativeBits() {
+    public void testReadBits_ReadNegativeBits() throws EOFException {
 
         // Create the stream
         byte[] data = {0x01};

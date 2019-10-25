@@ -4,10 +4,10 @@ import java.io.OutputStream;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -165,56 +165,6 @@ public class BitOutputStream extends OutputStream {
 
         // Copy the array
         this.buffer = Arrays.copyOf(this.buffer, newCapacity);
-    }
-
-
-
-    // -- Data Methods
-
-    /**
-     * Returns the length of the internal buffer.
-     * @return The internal buffer length.
-     */
-    public synchronized int getBufferLength() {
-        return this.buffer.length;
-    }
-
-    /**
-     * Returns a copy of our buffer data
-     * @return The buffer data
-     */
-    public synchronized byte[] getData() {
-        return this.buffer.clone();
-    }
-
-    /**
-     * Returns the byte data at a specific index.
-     * @param index The index
-     * @return The data at the index
-     */
-    public synchronized byte getDataAtIndex(int index) {
-
-        int bytesUsed = BitUtils.bitsToBytes(this.bitsUsed);
-        if (index > bytesUsed - 1)
-            throw new IndexOutOfBoundsException("Data index is out of bounds");
-
-        return this.buffer[index];
-    }
-
-    /**
-     * Returns the number of bits that we have used.
-     * @return The number of bits used
-     */
-    public synchronized int getNumBitsUsed() {
-        return this.bitsUsed;
-    }
-
-    /**
-     * Return the number of bytes that we have used.
-     * @return The number of bytes that we have used
-     */
-    public synchronized int getNumBytesUsed() {
-        return BitUtils.bitsToBytes(this.bitsUsed);
     }
 
 
@@ -514,84 +464,52 @@ public class BitOutputStream extends OutputStream {
 
 
 
-    // -- Data Write Methods (Strings)
+    // -- Getter Methods
 
     /**
-     * A private helper function to write UTF strings.
-     * @param str The string to write
-     * @param encoder The encoder to use
-     * @param addNullTerminator Whether or not to add the null terminator
+     * Returns the length of the internal buffer.
+     * @return The internal buffer length.
      */
-    private synchronized void writeString(String str, CharsetEncoder encoder, boolean addNullTerminator) {
-
-        if (str == null)
-            throw new IllegalArgumentException("Cannot write a null string to the output stream.");
-
-        if (encoder == null)
-            throw new IllegalArgumentException("Cannot write string with an invalid charset encoder");
-
-        // Create our byte array
-        byte[] strArray = new byte[addNullTerminator ? str.length() + 1 : str.length()];
-        ByteBuffer strBuffer = ByteBuffer.wrap(strArray);
-
-        // Encode the data and terminate it
-        encoder.encode(CharBuffer.wrap(str), strBuffer, true);
-        if (addNullTerminator)
-            strArray[str.length()] = 0x00;
-
-        // Write the data
-        this.writeBits(strArray, strArray.length * BitConstants.BITS_PER_BYTE);
+    public synchronized int getBufferLength() {
+        return this.buffer.length;
     }
 
     /**
-     * Writes a null-terminated UTF-8 string to the output stream.
-     * @param str The string to write
+     * Returns a copy of our buffer data
+     * @return The buffer data
      */
-    public synchronized void writeUTF8String(String str) {
-        this.writeUTF8String(str, true);
+    public synchronized byte[] getData() {
+        return this.buffer.clone();
     }
 
     /**
-     * Writes a UTF-8 string to the output stream.
-     * @param str The string to write
-     * @param addNullTerminator Whether or not to add a null terminator
+     * Returns the byte data at a specific index.
+     * @param index The index
+     * @return The data at the index
      */
-    public synchronized void writeUTF8String(String str, boolean addNullTerminator) {
-        this.writeString(str, UTF8_ENCODER, addNullTerminator);
+    public synchronized byte getDataAtIndex(int index) {
+
+        int bytesUsed = BitUtils.bitsToBytes(this.bitsUsed);
+        if (index > bytesUsed - 1)
+            throw new IndexOutOfBoundsException("Data index is out of bounds");
+
+        return this.buffer[index];
     }
 
     /**
-     * Writes a null-terminated UTF-16 string to the output stream in big-endian.
-     * @param str The string to write
+     * Returns the number of bits that we have used.
+     * @return The number of bits used
      */
-    public synchronized void writeUTF16String(String str) {
-        this.writeUTF16String(str, true);
+    public synchronized int getNumBitsUsed() {
+        return this.bitsUsed;
     }
 
     /**
-     * Writes a UTF-16 string to the output stream in big-endian.
-     * @param str The string to write
-     * @param addNullTerminator Whether or not to add a null terminator
+     * Return the number of bytes that we have used.
+     * @return The number of bytes that we have used
      */
-    public synchronized void writeUTF16String(String str, boolean addNullTerminator) {
-        this.writeString(str, UTF16_ENCODER_BE, true);
-    }
-
-    /**
-     * Writes a null-terminated UTF-16 string to the output stream in little-endian.
-     * @param str The string to write
-     */
-    public synchronized void writeUTF16StringLE(String str) {
-        this.writeUTF16StringLE(str, true);
-    }
-
-    /**
-     * Writes a UTF-16 string to the output stream in little-endian
-     * @param str The string to write
-     * @param addNullTerminator Whether or not to add a null terminator
-     */
-    public synchronized void writeUTF16StringLE(String str, boolean addNullTerminator) {
-        this.writeString(str, UTF16_ENCODER_LE, true);
+    public synchronized int getNumBytesUsed() {
+        return BitUtils.bitsToBytes(this.bitsUsed);
     }
 
 
