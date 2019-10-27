@@ -21,13 +21,18 @@
 package com.darkflame.utils.bitstream;
 
 /**
- * A collection of constants for use by the bit streams.
+ * A simple collection of constants that are used internally by the
+ * bitstream library, but are also available to outside third parties.
+ *
+ * @author  Jonathan Hart
+ * @since   1.0.0
  */
 public class BitConstants {
 
-    /** The number of bits in a byte. */
+    /**
+     * The total number of bits in a byte.
+     *
+     * @since   1.0.0
+     */
     public static final int BITS_PER_BYTE = 8;
-
-    /** The default buffer size. */
-    public static final int DEFAULT_BYTE_BUFFER_SIZE = 32;
 }

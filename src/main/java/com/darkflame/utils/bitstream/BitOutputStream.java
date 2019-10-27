@@ -24,38 +24,109 @@ import java.io.OutputStream;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
 
 import java.util.Arrays;
 
 /**
- * An output stream that allows bit write operations.
+ * A {@link BitOutputStream} contains an internal byte buffer
+ * that will keep track of all data being written. Data in this
+ * stream will be written bit-by-bit. An internal counter
+ * {@link BitOutputStream#bitsUsed} determines how many bits we
+ * have currently written to the output stream, while another
+ * counter {@link BitOutputStream#bitsAllocated} contains
+ * the number of bits that are currently allocated in the buffer
+ * and can be used to determine if the internal byte buffer needs
+ * to grow in it's capacity.
+ * <br>
+ * The buffer itself is allocated either to hold a starting amount
+ * of 32 bytes (256 bits) or more if initialized with an external
+ * byte buffer that exceeds 32 bits.
+ * <br>
+ * This type of {@link OutputStream} is quite useful for things
+ * such as networking as it allows data to be written in a much more
+ * efficient manner.
+ * <br>
+ * For example, in a typical {@link OutputStream}, most implementations
+ * like to write boolean data as single bytes, which ultimately wastes
+ * a good amount of space - 7 bits typically - that could be used to
+ * store other types of information, especially if we want to conserve
+ * the amount of data being sent over a network.
+ * <br>
+ * In this {@link BitOutputStream}, boolean values are stored as single
+ * bits - 1 or 0 - rather than a full byte, leading to smaller sizes and
+ * greater efficiency.
+ *
+ * @author  Jonathan Hart
+ * @since   1.0.0
+ * @see     BitInputStream
  */
 public class BitOutputStream extends OutputStream {
 
-    // -- Protected Constants
+    // -- Private Constants
 
-    /** The UTF-8 encoder. */
-    private static final CharsetEncoder UTF8_ENCODER = Charset.forName("UTF-8").newEncoder();
-
-    /** The UTF-16 encoder (big endian). */
-    private static final CharsetEncoder UTF16_ENCODER_BE = Charset.forName("UTF-16BE").newEncoder();
-
-    /** The UTF-16 encoder (little endian). */
-    private static final CharsetEncoder UTF16_ENCODER_LE = Charset.forName("UTF-16LE").newEncoder();
+    /**
+     * The default buffer size in bytes for creating a new
+     * {@link BitOutputStream}. This is used when the data
+     * is too small initially so that we don't have to call
+     * the {@link BitOutputStream#growCapacity(int)} method
+     * constantly during the first few write calls.
+     *
+     * @since   1.0.0
+     */
+    private static final int DEFAULT_BYTE_BUFFER_SIZE = 32;
 
 
 
     // -- Protected Variables
 
-    /* The number of bits that have been allocated. */
+    /**
+     * The number of bits that have been currently
+     * allocated in the internal buffer used by the
+     * output stream.
+     * <br>
+     * To obtain the number of bytes allocated, simply
+     * add 7 and divide by 8 as partial bits will form
+     * a new byte.
+     * <br>
+     * The value of this variable will always be a
+     * minimum of 256 (32 bytes) but will increase over
+     * time as the buffer size is expanded to make way
+     * for more information.
+     * <br>
+     * This value will also never be less than the value
+     * of {@link BitOutputStream#bitsUsed}.
+     *
+     * @since   1.0.0
+     */
     protected int bitsAllocated;
 
-    /** The number of bits that have been used. */
+    /**
+     * The number of bits that have been used by the
+     * input stream. To obtain the number of bytes used by
+     * the input stream, simply add 7 and divide by 8 as
+     * partial bits will form a new byte.
+     * <br>
+     * This will always be a non-negative number as it
+     * indicates that 0 or more bits are part of the stream.
+     *
+     * @since   1.0.0
+     */
     protected int bitsUsed;
 
-    /** The data buffer. Will expand as necessary */
+    /**
+     * An array of bytes that will hold the data that we are
+     * writing to the stream. This will increase in size over
+     * time to allow for holding more and more data.
+     * <br>
+     * It will always start out being able to hold at least
+     * 32 bytes (256 bits) or more if specified in the constructor.
+     * <br>
+     * Write operations will always start from <code>buffer[0]</code>
+     * and will constantly move forward as more data is written
+     * and the buffer expands.
+     *
+     * @since   1.0.0
+     */
     protected byte[] buffer;
 
 
@@ -64,32 +135,46 @@ public class BitOutputStream extends OutputStream {
     // -- Constructor
 
     /**
-     * Creates a bit output stream and sets the default buffer widths
+     * Creates a bit output stream that will hold binary data
+     * written to it and stored in a byte array.
+     * <br>
+     * This will first allocated 32 bytes (256 bits) to the internal
+     * byte array buffer and will set the number of bits allocated
+     * to 256, as well as reset the number of bits used to 0.
+     *
+     * @since   1.0.0
      */
     public BitOutputStream() {
 
         // Create the default buffer
-        this.buffer = new byte[BitConstants.DEFAULT_BYTE_BUFFER_SIZE];
+        this.buffer = new byte[DEFAULT_BYTE_BUFFER_SIZE];
 
         // Set our sizes
-        this.bitsAllocated = BitUtils.bytesToBits(BitConstants.DEFAULT_BYTE_BUFFER_SIZE);
+        this.bitsAllocated = BitUtils.bytesToBits(DEFAULT_BYTE_BUFFER_SIZE);
         this.bitsUsed = 0;
     }
 
     /**
-     * Creates a bitstream from a set of byte data. Aligns new information to the byte
-     * boundary of the new data.
-     * @param data The data
+     * Creates a bit output stream from existing binary data by
+     * simply copying the binary data from the passed byte array
+     * and setting our write offset to be at the end of the data
+     * as well as allocating enough space to hold the data.
+     *
+     * @since   1.0.0
+     * @param   data The binary data byte array
      */
     public BitOutputStream(byte[] data) {
         this(data, data.length);
     }
 
     /**
-     * Creates a bitstream from a set of byte data with the specified length. New information
-     * is aligned to byte boundary.
-     * @param data The data to copy
-     * @param length The length of the data to copy
+     * Creates a bit output stream from existing binary data with a
+     * specified length.
+     *
+     * The data
+     *
+     * @param data
+     * @param length
      */
     public BitOutputStream(byte[] data, int length) {
 
