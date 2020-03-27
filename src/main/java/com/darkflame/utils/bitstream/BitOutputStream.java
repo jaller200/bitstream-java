@@ -187,7 +187,7 @@ public class BitOutputStream extends OutputStream {
             throw new IllegalArgumentException("Can only copy data within the bounds of the byte array size and non-zero.");
 
         // Create our buffer
-        int allocationSize = BitConstants.DEFAULT_BYTE_BUFFER_SIZE > length ? BitConstants.DEFAULT_BYTE_BUFFER_SIZE : length;
+        int allocationSize = Math.max(DEFAULT_BYTE_BUFFER_SIZE, length);
         this.buffer = new byte[allocationSize];
 
         // Copy our data buffer
