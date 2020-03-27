@@ -579,12 +579,18 @@ public class BitOutputStream extends OutputStream {
     }
 
     /**
-     * Returns a copy of our buffer data
+     * Returns a copy of our buffer data.
      * @return The buffer data
      */
     public synchronized byte[] getData() {
         return this.buffer.clone();
     }
+
+    /**
+     * Returns a copy of our used buffer data.
+     * @return The buffer data
+     */
+    public synchronized byte[] getDataUsed() { return Arrays.copyOfRange(this.buffer, 0, getNumBytesUsed()); }
 
     /**
      * Returns the byte data at a specific index.
