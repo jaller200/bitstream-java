@@ -187,7 +187,7 @@ public class BitOutputStream extends OutputStream {
             throw new IllegalArgumentException("Can only copy data within the bounds of the byte array size and non-zero.");
 
         // Create our buffer
-        int allocationSize = BitConstants.DEFAULT_BYTE_BUFFER_SIZE > length ? BitConstants.DEFAULT_BYTE_BUFFER_SIZE : length;
+        int allocationSize = Math.max(DEFAULT_BYTE_BUFFER_SIZE, length);
         this.buffer = new byte[allocationSize];
 
         // Copy our data buffer
@@ -579,12 +579,18 @@ public class BitOutputStream extends OutputStream {
     }
 
     /**
-     * Returns a copy of our buffer data
+     * Returns a copy of our buffer data.
      * @return The buffer data
      */
     public synchronized byte[] getData() {
         return this.buffer.clone();
     }
+
+    /**
+     * Returns a copy of our used buffer data.
+     * @return The buffer data
+     */
+    public synchronized byte[] getDataUsed() { return Arrays.copyOfRange(this.buffer, 0, getNumBytesUsed()); }
 
     /**
      * Returns the byte data at a specific index.
